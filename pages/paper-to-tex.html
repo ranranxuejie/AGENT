@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 实战 — 论文转 LaTeX</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+
+.hero-badge {
+  color: var(--accent-secondary);
+  animation: fadeInUp 0.8s ease forwards 0.2s, badge-electric-pink 4s ease-in-out infinite 1s;
+}
+.hero-badge::before { background: var(--accent-secondary); }
+@keyframes badge-electric-pink {
+  0%,100%{box-shadow:0 0 0 0 rgba(244,114,182,0);border-color:rgba(244,114,182,0.2);}
+  50%{box-shadow:0 0 20px rgba(244,114,182,0.15);border-color:rgba(244,114,182,0.5);}
+}
+.hero h1 { font-size: clamp(42px, 7vw, 72px); }
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent) 50%, var(--accent-tertiary) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.top-nav .nav-brand .accent { color: var(--accent-secondary); }
+.code-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+@media (max-width:640px) { .code-compare{grid-template-columns:1fr;} }
+.code-compare .code-block { margin: 0; }
+.code-compare .code-block .header-label {
+  font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 10px 16px;
+  border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);
+  display: flex; align-items: center; gap: 8px;
+}
+.code-compare .code-block .header-label .dot-indicator {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.file-tag {
+  display: inline-block; padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+}
+.file-tag.md { background: rgba(56,189,248,0.12); color: var(--accent-tertiary); }
+.file-tag.word { background: rgba(52,211,153,0.12); color: #34d399; }
+.file-tag.tex { background: rgba(244,114,182,0.12); color: var(--accent-secondary); }
+
+</style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="top-nav" id="topNav">
+  <span class="nav-brand">CC <span class="accent">实战</span></span>
+  <a href="#pain"><span class="num">01</span>痛点</a>
+  <a href="#solution"><span class="num">02</span>解决方案</a>
+  <a href="#demo"><span class="num">03</span>实操演示</a>
+  <a href="#templates"><span class="num">04</span>模板配置</a>
+  <a href="#tips"><span class="num">05</span>进阶技巧</a>
+</nav>
+
+<!-- 全局背景 -->
+<div class="global-bg"><div class="orb"></div></div>
+<div class="grid-bg"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="crt-overlay"></div>
+<div class="scroll-scanline" id="scrollScanline"></div>
+
+<!-- 侧边导航 -->
+<nav class="toc" id="toc">
+  <a href="#pain" data-section="pain"><span class="dot"></span><span class="num">01</span><span class="label">痛点</span></a>
+  <a href="#solution" data-section="solution"><span class="dot"></span><span class="num">02</span><span class="label">解决方案</span></a>
+  <a href="#demo" data-section="demo"><span class="dot"></span><span class="num">03</span><span class="label">实操演示</span></a>
+  <a href="#templates" data-section="templates"><span class="dot"></span><span class="num">04</span><span class="label">模板配置</span></a>
+  <a href="#tips" data-section="tips"><span class="dot"></span><span class="num">05</span><span class="label">进阶技巧</span></a>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-badge electric-pulse">Use Case #1</div>
+  <h1><span class="glitch-text" data-text="论文转">论文转</span><br><span class="gradient-text neon-text">LaTeX</span></h1>
+  <p class="hero-subtitle">把 Markdown 或 Word 论文一键转成 LaTeX 格式 — Claude Code 实战场景</p>
+  <div class="scroll-indicator">
+    <div class="mouse"></div>
+    <span style="font-size:11px;color:var(--text-muted);letter-spacing:2px;">SCROLL</span>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- 1. 痛点 -->
+<section id="pain">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 01</div>
+    <h2><span class="glitch-text" data-text="为什么">为什么</span> <span class="accent">需要转换</span></h2>
+    <p class="section-desc">学术投稿、毕业论文、会议投稿 — LaTeX 几乎是刚需，但手动转换费时费力。</p>
+  </div>
+
+  <div class="card-grid fade-in">
+    <div class="card neon-border scan-beam">
+      <div class="card-icon pink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3>格式要求不同</h3>
+      <p>多数期刊和会议要求 LaTeX 投稿，但你的初稿可能是 Markdown 或 Word。手动重写格式极其痛苦。</p>
+    </div>
+    <div class="card neon-border scan-beam">
+      <div class="card-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>耗时且易出错</h3>
+      <p>手动转换公式、参考文献、图表编号，一篇 20 页的论文可能需要 1-2 天。而且很容易出错。</p>
+    </div>
+  </div>
+
+  <div class="compare-cards fade-in">
+    <div class="compare-card neon-border scan-beam">
+      <h4><span style="color:var(--accent-secondary);">Markdown / Word</span></h4>
+      <p>写起来快、方便协作、适合初稿。但缺少专业排版、公式渲染受限、无法满足期刊模板。</p>
+    </div>
+    <div class="compare-card neon-border scan-beam">
+      <h4><span style="color:var(--accent);">LaTeX</span></h4>
+      <p>学术排版标准、公式渲染完美、参考文献自动管理。但语法复杂、学习曲线陡峭。</p>
+    </div>
+  </div>
+
+  <div class="tip warn fade-in">
+    <span class="tip-icon">!</span>
+    <span>问题核心：<strong>内容已经写好了</strong>，只是格式需要转换。这正是 Claude Code 最擅长的事情。</span>
+  </div>
+  <div class="section-nav"><a href="#solution" class="section-nav-next">解决方案 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 2. 解决方案 -->
+<section id="solution">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 02</div>
+    <h2><span class="glitch-text" data-text="Claude Code">Claude Code</span> <span class="accent">解决方案</span></h2>
+    <p class="section-desc">一句话指令，Claude Code 自动完成格式转换、公式排版、参考文献处理。</p>
+  </div>
+
+  <div class="flow-diagram fade-in">
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F4C4;</div>
+      <div class="label">你的论文</div>
+      <div class="sub">.md / .docx</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node holo-shimmer" style="border-color:var(--accent);box-shadow:0 0 20px rgba(124,91,245,0.1);">
+      <div class="icon">&#x1F916;</div>
+      <div class="label">Claude Code</div>
+      <div class="sub">AI 转换</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F4DD;</div>
+      <div class="label">LaTeX 论文</div>
+      <div class="sub">.tex + 图表</div>
+    </div>
+  </div>
+
+  <div class="interactive-prompt fade-in">
+    <span class="prompt-symbol">></span>
+    <span class="prompt-text"><strong>你：</strong>把当前目录下的 paper.md 转成 LaTeX 格式，用 IEEE 双栏模板</span>
+  </div>
+  <div class="interactive-prompt fade-in">
+    <span class="prompt-symbol" style="color:var(--accent-secondary);">~</span>
+    <span class="prompt-text"><strong>Claude Code：</strong>好的，我来分析 paper.md 的内容结构，然后用 IEEEtran 模板生成 paper.tex…</span>
+  </div>
+
+  <div class="fade-in" style="margin-top:36px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Claude Code 会自动处理</h3>
+    <div class="card-grid-3">
+      <div class="card">
+        <div class="card-icon purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <h3>文档结构</h3>
+        <p>标题层级 → LaTeX section/subsection，目录自动生成</p>
+      </div>
+      <div class="card">
+        <div class="card-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
+        </div>
+        <h3>数学公式</h3>
+        <p>$formula$ → $formula$，行内/行间公式自动适配</p>
+      </div>
+      <div class="card">
+        <div class="card-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h3>参考文献</h3>
+        <p>BibTeX 引用自动生成，参考文献格式统一</p>
+      </div>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#demo" class="section-nav-next">实操演示 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 3. 实操演示 -->
+<section id="demo">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 03</div>
+    <h2><span class="glitch-text" data-text="实操">实操</span> <span class="accent">演示</span></h2>
+    <p class="section-desc">完整演示如何用 Claude Code 将一篇 Markdown 论文转为 LaTeX。</p>
+  </div>
+
+  <!-- 步骤 1: 准备文件 -->
+  <div class="fade-in" style="margin-bottom:40px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Step 1 — 准备论文文件</h3>
+    <p style="color:var(--text-secondary);font-size:15px;margin-bottom:16px;">确保你的论文文件在当前项目目录下。支持两种格式：</p>
+    <div class="compare-cards">
+      <div class="compare-card">
+        <h4><span class="file-tag md">.md</span> Markdown 格式</h4>
+        <p>适合技术博客、笔记型论文。Claude Code 能直接读取和解析。</p>
+      </div>
+      <div class="compare-card">
+        <h4><span class="file-tag word">.docx</span> Word 格式</h4>
+        <p>需要先安装 <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(124,91,245,0.1);padding:2px 6px;border-radius:3px;color:var(--accent-light);">pandoc</code> 进行预转换，或让 Claude Code 通过 Skill 处理。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步骤 2: 编写 Prompt -->
+  <div class="fade-in" style="margin-bottom:40px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Step 2 — 给 Claude Code 下达指令</h3>
+    <p style="color:var(--text-secondary);font-size:15px;margin-bottom:16px;">在终端中启动 Claude Code，然后描述你的需求：</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-lang">Claude Code Terminal</span>
+      </div>
+      <pre><span style="color:var(--text-muted);">$</span> claude
+
+<span style="color:#34d399;">Claude Code v1.0</span>
+
+<span style="color:var(--text-muted);">></span> <span style="color:var(--accent-light);">把 paper.md 转成 LaTeX 格式，要求：</span>
+<span style="color:var(--accent-light);">  1. 使用 IEEE 双栏模板（IEEEtran）</span>
+<span style="color:var(--accent-light);">  2. 保留所有数学公式，转成 LaTeX 语法</span>
+<span style="color:var(--accent-light);">  3. 图片引用保持不变，用 \includegraphics</span>
+<span style="color:var(--accent-light);">  4. 参考文献用 \cite{} 格式</span>
+<span style="color:var(--accent-light);">  5. 生成完整的 .tex 文件</span></pre>
+    </div>
+  </div>
+
+  <!-- 步骤 3: Claude Code 执行 -->
+  <div class="fade-in" style="margin-bottom:40px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Step 3 — Claude Code 自动执行</h3>
+    <p style="color:var(--text-secondary);font-size:15px;margin-bottom:16px;">Claude Code 会自动完成以下工作：</p>
+
+    <div class="steps">
+      <div class="step" data-step="1">
+        <div class="step-title">读取源文件</div>
+        <div class="step-content">分析 paper.md 的结构：标题、段落、公式、图表、引用。</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-title">生成 LaTeX 骨架</div>
+        <div class="step-content">创建 <code>paper.tex</code>，添加文档类、宏包、页面布局等模板配置。</div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-title">转换内容</div>
+        <div class="step-content">逐节转换：标题 → <code>\section{}</code>，列表 → <code>itemize</code>，公式保持不变。</div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-title">处理引用</div>
+        <div class="step-content">识别文中引用，生成 <code>\cite{key}</code> 格式，创建 <code>references.bib</code>。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 转换效果对比 -->
+  <div class="fade-in">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">转换效果对比</h3>
+    <div class="code-compare">
+      <div class="code-block">
+        <div class="header-label">
+          <span class="dot-indicator" style="background:var(--accent-tertiary);"></span>
+          Markdown 源文件
+        </div>
+        <pre><span style="color:var(--text-muted);"># 基于深度学习的图像分类</span>
+
+<span style="color:var(--accent-secondary);">## 摘要</span>
+
+本文提出了一种基于 ResNet 的
+图像分类方法，在 CIFAR-10 上
+达到了 <span style="color:#fbbf24;">95.2%</span> 的准确率。
+
+<span style="color:var(--accent-secondary);">## 方法</span>
+
+给定输入图像 <span style="color:#34d399;">$x \in \mathbb{R}^{H \times W \times 3}$</span>，
+我们的模型输出类别概率：
+
+<span style="color:#34d399;">$$P(y|x) = \text{softmax}(W \cdot f(x))$$</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="header-label">
+          <span class="dot-indicator" style="background:var(--accent-secondary);"></span>
+          LaTeX 输出
+        </div>
+        <pre><span style="color:var(--accent-tertiary);">\documentclass</span>[conference]{IEEEtran}
+<span style="color:var(--accent-tertiary);">\usepackage</span>{amsmath,graphicx}
+
+<span style="color:var(--accent-tertiary);">\begin</span>{document}
+<span style="color:var(--accent-tertiary);">\title</span>{基于深度学习的图像分类}
+<span style="color:var(--accent-tertiary);">\maketitle</span>
+
+<span style="color:var(--accent-secondary);">\begin</span>{abstract}
+本文提出了一种基于 ResNet 的
+图像分类方法，在 CIFAR-10 上
+达到了 <span style="color:#fbbf24;">95.2%</span> 的准确率。
+<span style="color:var(--accent-secondary);">\end</span>{abstract}
+
+<span style="color:var(--accent-tertiary);">\section</span>{方法}
+
+给定输入图像 <span style="color:#34d399;">$x \in \mathbb{R}^{H \times W \times 3}$</span>，
+模型输出：
+<span style="color:#34d399;">\[ P(y|x) = \text{softmax}(W \cdot f(x)) \]</span></pre>
+      </div>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#templates" class="section-nav-next">模板配置 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 4. 模板配置 -->
+<section id="templates">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 04</div>
+    <h2><span class="glitch-text" data-text="模板">模板</span> <span class="accent">配置</span></h2>
+    <p class="section-desc">常用 LaTeX 模板的 Claude Code 指令，直接复制使用。</p>
+  </div>
+
+  <!-- IEEE -->
+  <div class="fade-in" style="margin-bottom:40px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">IEEE 会议论文</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-lang">Claude Code Prompt</span>
+      </div>
+      <pre><span style="color:var(--accent-light);">将 paper.md 转为 LaTeX，使用 IEEEtran 会议模板。要求：</span>
+<span style="color:var(--accent-light);">1. 双栏排版，A4 纸张</span>
+<span style="color:var(--accent-light);">2. 包含 \usepackage{amsmath,amssymb,graphicx,hyperref}</span>
+<span style="color:var(--accent-light);">3. 标题居中，作者信息用 \author{} 格式</span>
+<span style="color:var(--accent-light);">4. 摘要用 abstract 环境</span>
+<span style="color:var(--accent-light);">5. 图表自动编号，用 \ref{} 引用</span></pre>
+    </div>
+  </div>
+
+  <!-- 期刊 -->
+  <div class="fade-in" style="margin-bottom:40px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Elsevier 期刊论文</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-lang">Claude Code Prompt</span>
+      </div>
+      <pre><span style="color:var(--accent-light);">将 paper.md 转为 LaTeX，使用 Elsevier 模板。要求：</span>
+<span style="color:var(--accent-light);">1. 文档类 \documentclass[preprint]{elsarticle}</span>
+<span style="color:var(--accent-light);">2. 包含 elsarticle.cls 模板宏包</span>
+<span style="color:var(--accent-light);">3. 使用 \begin{frontmatter} 包裹标题、作者、摘要</span>
+<span style="color:var(--accent-light);">4. 关键词用 \keyword{} 标记</span>
+<span style="color:var(--accent-light);">5. 参考文献用 elsarticle-num.bst 样式</span></pre>
+    </div>
+  </div>
+
+  <!-- 毕业论文 -->
+  <div class="fade-in" style="margin-bottom:40px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">中文毕业论文</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-lang">Claude Code Prompt</span>
+      </div>
+      <pre><span style="color:var(--accent-light);">将 paper.md 转为中文毕业论文 LaTeX 格式。要求：</span>
+<span style="color:var(--accent-light);">1. 使用 ctexart 文档类，UTF-8 编码</span>
+<span style="color:var(--accent-light);">2. 设置宋体/黑体/楷体字体映射</span>
+<span style="color:var(--accent-light);">3. 章节格式：第一章、1.1、1.1.1</span>
+<span style="color:var(--accent-light);">4. 页眉页脚符合学校要求</span>
+<span style="color:var(--accent-light);">5. 摘要分中文/英文两部分</span>
+<span style="color:var(--accent-light);">6. 目录用 \tableofcontents</span></pre>
+    </div>
+  </div>
+
+  <div class="tip info fade-in">
+    <span class="tip-icon">i</span>
+    <span>如果你的学校/期刊有特定的 .cls 或 .sty 模板文件，把它放到项目目录下，然后告诉 Claude Code：<code>使用 mytemplate.cls 模板</code></span>
+  </div>
+  <div class="section-nav"><a href="#tips" class="section-nav-next">进阶技巧 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 5. 进阶技巧 -->
+<section id="tips">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 05</div>
+    <h2><span class="glitch-text" data-text="进阶">进阶</span> <span class="accent">技巧</span></h2>
+    <p class="section-desc">让转换结果更好的实用技巧。</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon purple">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <h3>提供模板文件</h3>
+      <p>将目标期刊的 .cls 或 .sty 文件放入项目目录，Claude Code 能精确匹配模板要求。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <h3>分步转换</h3>
+      <p>对于长论文，可以先转骨架（标题+章节），再转公式，最后处理参考文献。逐步完善。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon green">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h3>编译验证</h3>
+      <p>转换后让 Claude Code 执行 <code>pdflatex</code> 编译，自动修复语法错误。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon pink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>增量修改</h3>
+      <p>论文修改后，只需让 Claude Code「更新 tex 文件」，它会对比差异后局部更新。</p>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">实用 Prompt 模板</h3>
+
+    <div class="interactive-prompt">
+      <span class="prompt-symbol">></span>
+      <span class="prompt-text"><strong>分步转换：</strong>先帮我把 paper.md 的目录结构转成 LaTeX 骨架，只保留章节标题，不要转内容</span>
+    </div>
+    <div class="interactive-prompt">
+      <span class="prompt-symbol">></span>
+      <span class="prompt-text"><strong>编译修复：</strong>编译 paper.tex，如果有错误帮我修复，直到编译通过</span>
+    </div>
+    <div class="interactive-prompt">
+      <span class="prompt-symbol">></span>
+      <span class="prompt-text"><strong>公式检查：</strong>检查 paper.tex 中所有数学公式，确保语法正确</span>
+    </div>
+    <div class="interactive-prompt">
+      <span class="prompt-symbol">></span>
+      <span class="prompt-text"><strong>参考文献：</strong>从 paper.md 中提取所有引用，在 paper.bib 中生成 BibTeX 条目</span>
+    </div>
+  </div>
+
+  <div class="tip success fade-in">
+    <span class="tip-icon">✓</span>
+    <span>掌握这些技巧后，一篇 20 页的论文转换只需几分钟。去 <a href="index.html" style="color:var(--accent-light);text-decoration:none;border-bottom:1px dashed var(--accent);">配置指南</a> 确保你的 Claude Code 已就绪！</span>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer fade-in">
+  <a href="#hero" class="back-to-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    回到顶部
+  </a>
+  <p style="margin-top:32px;">更多场景：<a href="index.html">配置指南</a> · <a href="api-intro.html">什么是 API</a> · <a href="claude-code-intro.html">什么是 Claude Code</a></p>
+  <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Made with Claude Code</p>
+  <p style="margin-top:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.5px;">Author: <span style="color:var(--accent-light);">Ranran</span> @ Tongji University</p>
+</div>
+
+</div>
+
+<script src="../js/common.js"></script>
+<script>
+initTypewriter('La');
+</script>
+</body>
+</html>

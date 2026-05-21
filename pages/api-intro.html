@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>什么是 API — 赛博入门指南</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+
+.request-response {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 32px 0;
+}
+@media (max-width: 640px) { .request-response { grid-template-columns: 1fr; } }
+.req-res-card {
+  background: #0d0d14; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;
+}
+.req-res-card .header {
+  display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+  font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.req-res-card .header .method {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  padding: 2px 8px; border-radius: 4px; font-weight: 700;
+}
+.req-res-card .header .method.get { background: rgba(52,211,153,0.15); color: #34d399; }
+.req-res-card .header .method.post { background: rgba(56,189,248,0.15); color: var(--accent-tertiary); }
+.req-res-card pre {
+  padding: 16px; font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px; line-height: 1.7; color: var(--accent-light); overflow-x: auto;
+}
+
+</style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="top-nav" id="topNav">
+  <span class="nav-brand">API <span class="accent">Guide</span></span>
+  <a href="#what"><span class="num">01</span>什么是 API</a>
+  <a href="#how"><span class="num">02</span>如何工作</a>
+  <a href="#types"><span class="num">03</span>常见类型</a>
+  <a href="#examples"><span class="num">04</span>实际例子</a>
+  <a href="#rest"><span class="num">05</span>REST API</a>
+</nav>
+
+<!-- 全局背景 -->
+<div class="global-bg"><div class="orb"></div></div>
+<div class="grid-bg"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="crt-overlay"></div>
+<div class="scroll-scanline" id="scrollScanline"></div>
+
+<!-- 侧边导航 -->
+<nav class="toc" id="toc">
+  <a href="#what" data-section="what"><span class="dot"></span><span class="num">01</span><span class="label">什么是 API</span></a>
+  <a href="#how" data-section="how"><span class="dot"></span><span class="num">02</span><span class="label">如何工作</span></a>
+  <a href="#types" data-section="types"><span class="dot"></span><span class="num">03</span><span class="label">常见类型</span></a>
+  <a href="#examples" data-section="examples"><span class="dot"></span><span class="num">04</span><span class="label">实际例子</span></a>
+  <a href="#rest" data-section="rest"><span class="dot"></span><span class="num">05</span><span class="label">REST API</span></a>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-badge electric-pulse">Developer Essentials</div>
+  <h1><span class="glitch-text" data-text="什么是">什么是</span><br><span class="gradient-text neon-text">API</span></h1>
+  <p class="hero-subtitle">Application Programming Interface — 程序之间对话的桥梁</p>
+  <div class="scroll-indicator">
+    <div class="mouse"></div>
+    <span style="font-size:11px;color:var(--text-muted);letter-spacing:2px;">SCROLL</span>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- 1. 什么是 API -->
+<section id="what">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 01</div>
+    <h2><span class="glitch-text" data-text="什么是">什么是</span> <span class="accent">API</span></h2>
+    <p class="section-desc">API 是一种约定 — 它告诉一个程序：你可以向我请求什么、用什么格式、我会返回什么。</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <h3>像餐厅的菜单</h3>
+      <p>你（客户端）看菜单点菜，厨房（服务器）做菜给你。你不需要知道厨房怎么做菜，只需要知道能点什么。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon purple">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <h3>像万能插座</h3>
+      <p>不管你的电器是什么品牌，只要有标准插头，就能接入电网。API 就是软件世界的「标准插座」。</p>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <p style="font-size:15px;color:var(--text-secondary);margin-bottom:16px;">
+      <strong style="color:var(--text-primary);">一句话总结：</strong>
+      API 是一个「接口」，让不同的软件系统能够互相通信。当你用手机查看天气时，天气 App 就是通过 API 从气象服务器获取数据的。
+    </p>
+  </div>
+  <div class="section-nav"><a href="#how" class="section-nav-next">它如何工作 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 2. 如何工作 -->
+<section id="how">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 02</div>
+    <h2><span class="glitch-text" data-text="如何工作">如何工作</span></h2>
+    <p class="section-desc">API 的核心就是「请求 — 处理 — 响应」这个循环。</p>
+  </div>
+
+  <div class="flow-diagram fade-in">
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F4F1;</div>
+      <div class="label">客户端</div>
+      <div class="sub">App / 网页 / 终端</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F4E8;</div>
+      <div class="label">API 请求</div>
+      <div class="sub">HTTP + 数据</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F3E0;</div>
+      <div class="label">服务器</div>
+      <div class="sub">处理 & 返回</div>
+    </div>
+    <div class="flow-arrow reverse">&rarr;</div>
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F4E6;</div>
+      <div class="label">响应数据</div>
+      <div class="sub">JSON / XML</div>
+    </div>
+  </div>
+
+  <div class="tip info fade-in">
+    <span class="tip-icon">i</span>
+    <span>这就像你发短信给朋友（请求），朋友思考后回复你（响应）。API 定义了短信的格式和规则。</span>
+  </div>
+  <div class="section-nav"><a href="#types" class="section-nav-next">常见 API 类型 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 3. 常见类型 -->
+<section id="types">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 03</div>
+    <h2><span class="glitch-text" data-text="常见">常见</span> <span class="accent">类型</span></h2>
+    <p class="section-desc">不同的场景使用不同类型的 API，以下是开发者最常接触的几种。</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon green">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>REST API</h3>
+      <p>最流行的 Web API 风格。用 HTTP 方法（GET/POST/PUT/DELETE）操作资源，返回 JSON 数据。简单、直观、无状态。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon pink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+      </div>
+      <h3>GraphQL</h3>
+      <p>一种查询语言。客户端精确指定需要哪些数据，服务器只返回这些。解决了 REST 的「过度获取」或「不足获取」问题。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <h3>WebSocket</h3>
+      <p>建立持久连接，支持实时双向通信。适合聊天、在线游戏、股票行情等需要实时推送的场景。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon purple">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h3>gRPC</h3>
+      <p>Google 出品的高性能 RPC 框架。使用 Protocol Buffers 序列化，比 REST 更快，适合微服务间通信。</p>
+    </div>
+  </div>
+
+  <div class="tip warn fade-in">
+    <span class="tip-icon">!</span>
+    <span>初学者只需要先掌握 <strong>REST API</strong>，它是目前使用最广泛的 API 风格，90% 的场景都能胜任。</span>
+  </div>
+  <div class="section-nav"><a href="#examples" class="section-nav-next">实际例子 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 4. 实际例子 -->
+<section id="examples">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 04</div>
+    <h2><span class="glitch-text" data-text="实际">实际</span> <span class="accent">例子</span></h2>
+    <p class="section-desc">看看 API 在真实世界中是怎么被调用的。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:32px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">获取天气信息</h3>
+    <p style="color:var(--text-secondary);font-size:15px;margin-bottom:16px;">用一个简单的 HTTP 请求就能获取北京的天气：</p>
+    <div class="request-response">
+      <div class="req-res-card">
+        <div class="header">
+          <span class="method get">GET</span>
+          <span style="color:var(--text-secondary);font-size:12px;">请求</span>
+        </div>
+        <pre><span style="color:var(--text-muted);">// GET /api/weather?city=beijing HTTP/1.1</span>
+<span style="color:var(--text-muted);">// Host: api.example.com</span>
+<span style="color:var(--text-muted);">// Authorization: Bearer YOUR_API_KEY</span></pre>
+      </div>
+      <div class="req-res-card">
+        <div class="header">
+          <span style="color:#34d399;font-size:11px;font-weight:700;background:rgba(52,211,153,0.15);padding:2px 8px;border-radius:4px;">200 OK</span>
+          <span style="color:var(--text-secondary);font-size:12px;">响应</span>
+        </div>
+        <pre>{
+  <span style="color:var(--accent-secondary);">"city"</span>: <span style="color:#34d399;">"北京"</span>,
+  <span style="color:var(--accent-secondary);">"temp"</span>: <span style="color:#fbbf24;">28</span>,
+  <span style="color:var(--accent-secondary);">"weather"</span>: <span style="color:#34d399;">"晴"</span>,
+  <span style="color:var(--accent-secondary);">"humidity"</span>: <span style="color:#fbbf24;">45</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">调用 AI API</h3>
+    <p style="color:var(--text-secondary);font-size:15px;margin-bottom:16px;">调用 Claude API 发送一条消息（Python 示例）：</p>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-lang">Python</span>
+      </div>
+      <pre><span style="color:var(--text-muted);">import</span> anthropic
+
+client = anthropic.Anthropic(api_key=<span style="color:#34d399;">"your-api-key"</span>)
+message = client.messages.create(
+    model=<span style="color:#34d399;">"claude-sonnet-4-20250514"</span>,
+    max_tokens=<span style="color:#fbbf24;">1024</span>,
+    messages=[{<span style="color:var(--accent-secondary);">"role"</span>: <span style="color:#34d399;">"user"</span>, <span style="color:var(--accent-secondary);">"content"</span>: <span style="color:#34d399;">"你好！"</span>}]
+)
+<span style="color:var(--text-muted);">print</span>(message.content[<span style="color:#fbbf24;">0</span>].text)</pre>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#rest" class="section-nav-next">REST API 详解 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 5. REST API 详解 -->
+<section id="rest">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 05</div>
+    <h2><span class="glitch-text" data-text="REST">REST</span> <span class="accent">API 详解</span></h2>
+    <p class="section-desc">REST 是目前最流行的 API 设计风格，理解它就理解了 API 的 80%。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">四种基本操作</h3>
+    <div class="compare-cards">
+      <div class="compare-card">
+        <h4><span style="color:#34d399;">GET</span> 获取数据</h4>
+        <p>从服务器读取信息，不修改任何数据。相当于「查」。</p>
+        <div class="example">GET /api/users/123</div>
+      </div>
+      <div class="compare-card">
+        <h4><span style="color:var(--accent-tertiary);">POST</span> 创建数据</h4>
+        <p>向服务器提交新数据。相当于「增」。</p>
+        <div class="example">POST /api/users<br>{"name": "小明", "email": "..."}</div>
+      </div>
+      <div class="compare-card">
+        <h4><span style="color:var(--accent);">PUT</span> 更新数据</h4>
+        <p>替换服务器上的已有数据。相当于「改」。</p>
+        <div class="example">PUT /api/users/123<br>{"name": "小红"}</div>
+      </div>
+      <div class="compare-card">
+        <h4><span style="color:var(--accent-secondary);">DELETE</span> 删除数据</h4>
+        <p>从服务器移除数据。相当于「删」。</p>
+        <div class="example">DELETE /api/users/123</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">关键概念</h3>
+    <div class="steps">
+      <div class="step" data-step="1">
+        <div class="step-title">端点（Endpoint）</div>
+        <div class="step-content">服务器上的一个 URL 地址，比如 <code>https://api.example.com/users</code>。每个端点提供特定的功能。</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-title">认证（Authentication）</div>
+        <div class="step-content">证明「你是谁」。通常通过 API Key 或 Token 放在请求头中：<code>Authorization: Bearer xxx</code></div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-title">状态码（Status Code）</div>
+        <div class="step-content">服务器告诉你的结果：<code>200</code> 成功、<code>400</code> 请求错误、<code>401</code> 未授权、<code>404</code> 未找到、<code>500</code> 服务器故障。</div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-title">速率限制（Rate Limit）</div>
+        <div class="step-content">服务器限制你每分钟/每天能调用多少次。防止滥用，也保护服务器稳定。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip success fade-in">
+    <span class="tip-icon">✓</span>
+    <span>现在你已经理解了 API 的核心概念！接下来可以去了解 <a href="claude-code-intro.html" style="color:var(--accent-light);text-decoration:none;border-bottom:1px dashed var(--accent);">Claude Code</a> — 一个利用 AI API 的强大开发工具。</span>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer fade-in">
+  <a href="#hero" class="back-to-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    回到顶部
+  </a>
+  <p style="margin-top:32px;">继续探索：<a href="claude-code-intro.html">Claude Code 是什么</a> | <a href="index.html">回到首页</a></p>
+  <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Made with Claude Code</p>
+  <p style="margin-top:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.5px;">Author: <span style="color:var(--accent-light);">Ranran</span> @ Tongji University</p>
+</div>
+
+</div>
+
+<script src="../js/common.js"></script>
+<script>
+initTypewriter('A');
+</script>
+</body>
+</html>

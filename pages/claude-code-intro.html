@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>什么是 Claude Code — Vibe Coding 工具</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+
+.hero-badge {
+  animation: fadeInUp 0.8s ease forwards 0.2s, badge-electric 4s ease-in-out infinite 1s;
+}
+@keyframes badge-electric {
+  0%,100%{box-shadow:0 0 0 0 rgba(124,91,245,0);border-color:rgba(124,91,245,0.2);}
+  50%{box-shadow:0 0 20px rgba(124,91,245,0.15);border-color:rgba(124,91,245,0.5);}
+}
+@media (max-width:640px) {
+  .hero { min-height: 92vh; padding: 88px 18px 104px; }
+  .hero h1 { font-size: clamp(42px, 14vw, 58px); }
+  .hero-subtitle { font-size: 15px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="top-nav" id="topNav">
+  <span class="nav-brand">CC <span class="accent">Intro</span></span>
+  <a href="#vibe"><span class="num">01</span>Vibe Coding</a>
+  <a href="#what"><span class="num">02</span>什么是 CC</a>
+  <a href="#features"><span class="num">03</span>核心能力</a>
+  <a href="#flow"><span class="num">04</span>工作流程</a>
+  <a href="#terminal"><span class="num">05</span>终端 vs VS Code</a>
+  <a href="#start"><span class="num">06</span>开始使用</a>
+</nav>
+
+<!-- 全局背景 -->
+<div class="global-bg"><div class="orb"></div></div>
+<div class="grid-bg"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="crt-overlay"></div>
+<div class="scroll-scanline" id="scrollScanline"></div>
+
+<!-- 侧边导航 -->
+<nav class="toc" id="toc">
+  <a href="#vibe" data-section="vibe"><span class="dot"></span><span class="num">01</span><span class="label">Vibe Coding</span></a>
+  <a href="#what" data-section="what"><span class="dot"></span><span class="num">02</span><span class="label">什么是 CC</span></a>
+  <a href="#features" data-section="features"><span class="dot"></span><span class="num">03</span><span class="label">核心能力</span></a>
+  <a href="#flow" data-section="flow"><span class="dot"></span><span class="num">04</span><span class="label">工作流程</span></a>
+  <a href="#terminal" data-section="terminal"><span class="dot"></span><span class="num">05</span><span class="label">终端 vs VS Code</span></a>
+  <a href="#start" data-section="start"><span class="dot"></span><span class="num">06</span><span class="label">开始使用</span></a>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-badge electric-pulse">Vibe Coding Tool</div>
+  <h1><span class="glitch-text" data-text="Claude Code">Claude Code</span><br><span class="gradient-text neon-text">入门指南</span></h1>
+  <p class="hero-subtitle">用自然语言写代码 — AI 时代的 Vibe Coding 工具</p>
+  <div class="scroll-indicator">
+    <div class="mouse"></div>
+    <span style="font-size:11px;color:var(--text-muted);letter-spacing:2px;">SCROLL</span>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- 1. Vibe Coding -->
+<section id="vibe">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 01</div>
+    <h2><span class="glitch-text" data-text="什么是">什么是</span> <span class="accent">Vibe Coding</span></h2>
+    <p class="section-desc">Andrej Karpathy 在 2025 年提出的概念 — 用自然语言描述需求，让 AI 帮你写代码。</p>
+  </div>
+
+  <div class="compare-cards fade-in">
+    <div class="compare-card neon-border scan-beam">
+      <h4><span style="font-size:20px;">&#x1F4DD;</span> <span style="color:var(--accent-secondary);">传统编程</span></h4>
+      <p>学习语法 → 记住 API → 手写每一行代码 → 调试 → 反复修改</p>
+      <div class="example">
+        <span style="color:var(--text-muted);">// 需要手动写：</span><br>
+        <span style="color:var(--accent-tertiary);">for</span> (<span style="color:var(--accent-tertiary);">int</span> i = 0; i &lt; arr.length; i++) {<br>
+        &nbsp;&nbsp;<span style="color:var(--accent-tertiary);">if</span> (arr[i] == target) <span style="color:var(--accent-tertiary);">return</span> i;<br>
+        }
+      </div>
+    </div>
+    <div class="compare-card neon-border scan-beam">
+      <h4><span style="font-size:20px;">&#x1F680;</span> <span style="color:var(--accent);">Vibe Coding</span></h4>
+      <p>描述需求 → AI 理解 → 自动生成代码 → 审查 → 轻松搞定</p>
+      <div class="example">
+        <span style="color:var(--accent-light);">"写一个函数，在数组中查找目标值，</span><br>
+        <span style="color:var(--accent-light);">&nbsp;找到返回索引，找不到返回 -1"</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip info fade-in">
+    <span class="tip-icon">i</span>
+    <span>Vibe Coding 的核心理念：<strong>你不需要精通编程语言的语法</strong>，只需要清楚地表达你想做什么。AI 负责把「意图」变成「代码」。</span>
+  </div>
+  <div class="section-nav"><a href="#what" class="section-nav-next">什么是 Claude Code <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 2. 什么是 Claude Code -->
+<section id="what">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 02</div>
+    <h2><span class="glitch-text" data-text="什么是">什么是</span> <span class="accent">Claude Code</span></h2>
+    <p class="section-desc">Anthropic 官方出品的 AI 编程助手，运行在终端或 VS Code 中。</p>
+  </div>
+
+  <div class="card-grid-3 fade-in">
+    <div class="card neon-border scan-beam">
+      <div class="card-icon purple">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9l3 3-3 3"/><line x1="15" y1="15" x2="15" y2="15"/></svg>
+      </div>
+      <h3>终端工具</h3>
+      <p>直接在命令行中使用，轻量、快速、无 GUI 负担。</p>
+    </div>
+    <div class="card neon-border scan-beam">
+      <div class="card-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>VS Code 集成</h3>
+      <p>侧边栏插件，与你熟悉的编辑器无缝融合。</p>
+    </div>
+    <div class="card neon-border scan-beam">
+      <div class="card-icon green">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <h3>AI 驱动</h3>
+      <p>基于 Claude 大模型，理解上下文，自主执行复杂任务。</p>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <p style="font-size:15px;color:var(--text-secondary);margin-bottom:16px;">
+      简单来说：你告诉 Claude Code 你想做什么，它会<strong style="color:var(--text-primary);">读取你的项目文件</strong>、
+      <strong style="color:var(--text-primary);">理解上下文</strong>、<strong style="color:var(--text-primary);">编写代码</strong>、
+      <strong style="color:var(--text-primary);">运行命令</strong>、<strong style="color:var(--text-primary);">调试错误</strong>，
+      直到任务完成。
+    </p>
+  </div>
+
+  <div class="interactive-prompt fade-in">
+    <span class="prompt-symbol">></span>
+    <span class="prompt-text"><strong>你：</strong>帮我写一个 Python 脚本，读取 CSV 文件并生成柱状图</span>
+  </div>
+  <div class="interactive-prompt fade-in">
+    <span class="prompt-symbol" style="color:var(--accent-secondary);">~</span>
+    <span class="prompt-text"><strong>Claude Code：</strong>好的，我来帮你实现。首先让我看看当前目录的结构…[自动执行]</span>
+  </div>
+  <div class="section-nav"><a href="#features" class="section-nav-next">核心能力 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 3. 核心能力 -->
+<section id="features">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 03</div>
+    <h2><span class="glitch-text" data-text="核心">核心</span> <span class="accent">能力</span></h2>
+    <p class="section-desc">Claude Code 不只是一个聊天机器人 — 它能实际操作你的电脑。</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon purple">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      </div>
+      <h3>读写文件</h3>
+      <p>创建、编辑、重命名文件和文件夹。理解整个项目的代码结构。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <h3>执行命令</h3>
+      <p>在终端中运行 npm、git、python 等命令，安装依赖、启动服务。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon green">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <h3>搜索代码</h3>
+      <p>在整个项目中搜索函数、类名、错误信息，快速定位问题。</p>
+    </div>
+    <div class="card fade-in neon-border scan-beam">
+      <div class="card-icon pink">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <h3>编写与调试</h3>
+      <p>自动生成代码、运行测试、发现 bug 并修复，循环直到通过。</p>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">对比传统工具</h3>
+    <div class="compare-cards">
+      <div class="compare-card">
+        <h4><span style="color:var(--accent-secondary);">GitHub Copilot</span></h4>
+        <p>在编辑器中自动补全代码。你写一行，它补一行。需要你主导编码过程。</p>
+      </div>
+      <div class="compare-card">
+        <h4><span style="color:var(--accent);">Claude Code</span></h4>
+        <p>你只说需求，它自主完成整个任务。能读文件、跑命令、调试，像一个结对编程的搭档。</p>
+      </div>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#flow" class="section-nav-next">工作流程 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 4. 工作流程 -->
+<section id="flow">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 04</div>
+    <h2><span class="glitch-text" data-text="工作">工作</span> <span class="accent">流程</span></h2>
+    <p class="section-desc">Claude Code 执行任务的标准流程 — 理解、计划、执行、验证。</p>
+  </div>
+
+  <div class="flow-diagram fade-in">
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F4AC;</div>
+      <div class="label">你下达指令</div>
+      <div class="sub">自然语言描述</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F50D;</div>
+      <div class="label">分析项目</div>
+      <div class="sub">读取文件结构</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x1F4A1;</div>
+      <div class="label">制定计划</div>
+      <div class="sub">确定执行步骤</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node holo-shimmer">
+      <div class="icon">&#x2699;&#xFE0F;</div>
+      <div class="label">执行操作</div>
+      <div class="sub">写代码 + 跑命令</div>
+    </div>
+  </div>
+
+  <div class="steps fade-in">
+    <div class="step" data-step="1">
+      <div class="step-title">理解需求</div>
+      <div class="step-content">你用自然语言描述想做什么，Claude Code 会确认理解是否正确，必要时提问。</div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="step-title">探索项目</div>
+      <div class="step-content">自动读取相关文件、分析代码结构，理解当前项目的技术栈和上下文。</div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="step-title">制定方案</div>
+      <div class="step-content">列出具体步骤，你可以确认或调整方向。复杂任务会先写计划再动手。</div>
+    </div>
+    <div class="step" data-step="4">
+      <div class="step-title">执行 & 验证</div>
+      <div class="step-content">写代码 → 运行测试 → 发现问题 → 自动修复 → 循环直到通过。</div>
+    </div>
+  </div>
+
+  <div class="tip success fade-in">
+    <span class="tip-icon">✓</span>
+    <span>整个过程是<strong>迭代式</strong>的 — Claude Code 会不断验证结果，直到任务完成。你也可以随时中断或修改方向。</span>
+  </div>
+  <div class="section-nav"><a href="#terminal" class="section-nav-next">终端 vs VS Code <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 5. 终端 vs VS Code -->
+<section id="terminal">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 05</div>
+    <h2><span class="glitch-text" data-text="终端">终端</span> <span class="accent">vs VS Code</span></h2>
+    <p class="section-desc">Claude Code 支持两种使用方式，各有优势。</p>
+  </div>
+
+  <div class="compare-cards fade-in">
+    <div class="compare-card neon-border scan-beam" style="border-top:2px solid var(--accent);">
+      <h4>&#x1F4BB; <span style="color:var(--accent);">VS Code 扩展</span></h4>
+      <p>在侧边栏中使用，可以直接看到代码文件和变更。适合需要可视化编辑的场景。</p>
+      <div class="example" style="margin-top:16px;">
+        <span style="color:#34d399;">+</span> 所见即所得，实时查看代码变更<br>
+        <span style="color:#34d399;">+</span> 可以在编辑器中手动微调<br>
+        <span style="color:#34d399;">+</span> 与现有插件生态兼容<br>
+        <span style="color:var(--accent-secondary);">-</span> 需要安装 VS Code
+      </div>
+    </div>
+    <div class="compare-card neon-border scan-beam" style="border-top:2px solid var(--accent-secondary);">
+      <h4>&#x1F4FB; <span style="color:var(--accent-secondary);">终端 CLI</span></h4>
+      <p>直接在命令行中使用，轻量快速。适合习惯终端操作或服务器环境。</p>
+      <div class="example" style="margin-top:16px;">
+        <span style="color:#34d399;">+</span> 轻量、快速、无 GUI 负担<br>
+        <span style="color:#34d399;">+</span> 适合 SSH 远程服务器使用<br>
+        <span style="color:#34d399;">+</span> 可以集成到脚本和 CI/CD<br>
+        <span style="color:var(--accent-secondary);">-</span> 纯文本界面，需要一定终端基础
+      </div>
+    </div>
+  </div>
+
+  <div class="tip info fade-in">
+    <span class="tip-icon">i</span>
+    <span>两者<strong>共享相同的 AI 能力</strong>，只是交互界面不同。新手推荐从 VS Code 扩展开始，更容易上手。</span>
+  </div>
+  <div class="section-nav"><a href="#start" class="section-nav-next">开始使用 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 6. 开始使用 -->
+<section id="start">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 06</div>
+    <h2><span class="glitch-text" data-text="开始">开始</span> <span class="accent">使用</span></h2>
+    <p class="section-desc">三步开始你的 Vibe Coding 之旅。</p>
+  </div>
+
+  <div class="steps fade-in">
+    <div class="step" data-step="1">
+      <div class="step-title">安装 Claude Code</div>
+      <div class="step-content">打开终端，执行安装命令</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-dot red"></span>
+          <span class="code-dot yellow"></span>
+          <span class="code-dot green"></span>
+          <span class="code-lang">PowerShell</span>
+        </div>
+        <pre>& ([scriptblock]::Create((New-Object Net.WebClient).DownloadString("https://claude-zh.cn/scripts/install.ps1")))</pre>
+      </div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="step-title">配置 API Key</div>
+      <div class="step-content">使用 CC Switch 工具配置你的 API 密钥（推荐 DeepSeek 或 Xiaomi MiMo 平台）</div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="step-title">开始编码</div>
+      <div class="step-content">在终端中输入 <code>claude</code> 启动，然后用自然语言描述你的需求！</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-dot red"></span>
+          <span class="code-dot yellow"></span>
+          <span class="code-dot green"></span>
+          <span class="code-lang">Terminal</span>
+        </div>
+        <pre><span style="color:var(--text-muted);">$</span> claude
+
+<span style="color:#34d399;">Claude Code v1.0</span> — Powered by Claude
+
+<span style="color:var(--text-muted);">></span> <span style="color:var(--accent-light);">帮我创建一个 Python 网页爬虫，抓取 Hacker News 首页标题</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top:40px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">常用命令</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item">
+        <span class="key">/help</span>
+        <span class="desc">查看帮助信息</span>
+      </div>
+      <div class="cmd-item">
+        <span class="key">/config</span>
+        <span class="desc">修改设置（主题、模型等）</span>
+      </div>
+      <div class="cmd-item">
+        <span class="key">/clear</span>
+        <span class="desc">清空当前对话</span>
+      </div>
+      <div class="cmd-item">
+        <span class="key">/install-skill</span>
+        <span class="desc">安装 Skill 扩展</span>
+      </div>
+      <div class="cmd-item">
+        <span class="key">Ctrl + C</span>
+        <span class="desc">中断当前操作</span>
+      </div>
+      <div class="cmd-item">
+        <span class="key">ESC</span>
+        <span class="desc">取消输入</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip warn fade-in" style="margin-top:24px;">
+    <span class="tip-icon">!</span>
+    <span>初次使用建议先完成 <a href="index.html" style="color:var(--accent-light);text-decoration:none;border-bottom:1px dashed var(--accent);">Claude Code 完整配置指南</a>，确保 API 和编辑器都设置好。</span>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer fade-in">
+  <a href="#hero" class="back-to-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    回到顶部
+  </a>
+  <p style="margin-top:32px;">继续探索：<a href="api-intro.html">什么是 API</a> | <a href="index.html">完整配置指南</a></p>
+  <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Made with Claude Code</p>
+  <p style="margin-top:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.5px;">Author: <span style="color:var(--accent-light);">Ranran</span> @ Tongji University</p>
+</div>
+
+</div>
+
+<script src="../js/common.js"></script>
+<script>
+initTypewriter('入');
+</script>
+</body>
+</html>
