@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coding 工具使用技巧 — Claude Code</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: rgba(18, 18, 26, 0.7);
+  --bg-card-hover: rgba(28, 28, 42, 0.8);
+  --accent: #7c5bf5;
+  --accent-light: #a78bfa;
+  --accent-glow: rgba(124, 91, 245, 0.3);
+  --accent-secondary: #f472b6;
+  --accent-tertiary: #38bdf8;
+  --accent-green: #34d399;
+  --accent-amber: #fbbf24;
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b8;
+  --text-muted: #6b6b80;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(124, 91, 245, 0.3);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --glass: rgba(255, 255, 255, 0.03);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary); color: var(--text-primary);
+  line-height: 1.7; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+.global-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.global-bg::before {
+  content: ''; position: absolute; width: 800px; height: 800px;
+  top: -200px; left: -200px;
+  background: radial-gradient(circle, rgba(124, 91, 245, 0.12) 0%, transparent 70%);
+  animation: float-orb 20s ease-in-out infinite;
+}
+.global-bg::after {
+  content: ''; position: absolute; width: 600px; height: 600px;
+  bottom: -100px; right: -100px;
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.1) 0%, transparent 70%);
+  animation: float-orb 25s ease-in-out infinite reverse;
+}
+.orb {
+  position: absolute; width: 400px; height: 400px;
+  top: 40%; left: 50%; transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+  animation: float-orb 30s ease-in-out infinite;
+}
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(50px, -30px) scale(1.1); }
+  50% { transform: translate(-30px, 40px) scale(0.95); }
+  75% { transform: translate(40px, 20px) scale(1.05); }
+}
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black, transparent);
+  pointer-events: none;
+}
+.container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.hero {
+  min-height: 60vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  padding: 120px 24px 80px; position: relative;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 20px; border-radius: 100px;
+  background: var(--glass); border: 1px solid var(--border);
+  color: var(--accent-light); font-size: 13px; font-weight: 500;
+  letter-spacing: 0.5px; margin-bottom: 32px;
+  backdrop-filter: blur(20px); opacity: 0;
+  animation: fadeInUp 0.8s ease forwards 0.2s, badge-electric 4s ease-in-out infinite 1s;
+}
+.hero-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.5);} }
+@keyframes badge-electric {
+  0%,100%{box-shadow:0 0 0 0 rgba(124,91,245,0);border-color:rgba(124,91,245,0.2);}
+  50%{box-shadow:0 0 20px rgba(124,91,245,0.15);border-color:rgba(124,91,245,0.5);}
+}
+.hero h1 {
+  font-size: clamp(40px, 7vw, 64px); font-weight: 900;
+  line-height: 1.1; letter-spacing: -1px; margin-bottom: 20px;
+  opacity: 0; animation: fadeInUp 0.8s ease forwards 0.4s;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-subtitle {
+  font-size: 17px; color: var(--text-secondary); max-width: 600px;
+  opacity: 0; animation: fadeInUp 0.8s ease forwards 0.6s;
+}
+@keyframes fadeInUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+/* 顶部导航 */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 32px; height: 56px; display: flex; align-items: center;
+  justify-content: center; gap: 4px;
+  background: rgba(10,10,15,0.7); backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.top-nav.visible { transform: translateY(0); }
+.top-nav .nav-brand { font-weight: 800; font-size: 14px; color: var(--text-primary); margin-right: 20px; white-space: nowrap; }
+.top-nav .nav-brand .accent { color: var(--accent-light); }
+.top-nav a {
+  display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+  font-size: 12.5px; font-weight: 500; color: var(--text-muted);
+  text-decoration: none; border-radius: 8px; transition: all 0.25s ease; white-space: nowrap;
+}
+.top-nav a .num { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.5; }
+.top-nav a:hover { color: var(--text-secondary); background: rgba(255,255,255,0.04); }
+.top-nav a.active { color: var(--text-primary); background: rgba(124, 91, 245, 0.1); }
+.top-nav a.active .num { color: var(--accent); opacity: 1; }
+@media (max-width:860px) {
+  .top-nav{padding:0 12px;gap:2px;} .top-nav .nav-brand{display:none;}
+  .top-nav a{padding:6px 8px;font-size:11.5px;} .top-nav a .num{display:none;}
+}
+
+/* 侧边导航 */
+.toc {
+  position: fixed; right: 32px; top: 50%; transform: translateY(-50%);
+  z-index: 100; display: flex; flex-direction: column; gap: 6px;
+}
+.toc a {
+  display: flex; align-items: center; gap: 10px; text-decoration: none;
+  color: var(--text-muted); font-size: 12px; font-weight: 500;
+  padding: 6px 12px 6px 14px; border-radius: 8px;
+  border: 1px solid transparent; transition: all 0.3s ease; white-space: nowrap;
+}
+.toc a .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); transition: all 0.3s ease; flex-shrink: 0; }
+.toc a .num { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.toc a .label { opacity: 0; max-width: 0; overflow: hidden; transition: all 0.3s ease; }
+.toc a:hover .label, .toc a.active .label { opacity: 1; max-width: 120px; }
+.toc a:hover, .toc a.active { color: var(--text-primary); background: var(--bg-card); border-color: var(--border); backdrop-filter: blur(20px); }
+.toc a.active .dot { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+@media (max-width:1100px) { .toc{display:none;} }
+
+/* 章节 */
+section { padding: 80px 0; position: relative; }
+section + section { border-top: 1px solid var(--border); }
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+  color: var(--accent-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+}
+.section-label .line {
+  width: 32px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent);
+  animation: neon-line-pulse 2s ease-in-out infinite;
+}
+@keyframes neon-line-pulse {
+  0%,100%{box-shadow:0 0 4px var(--accent),0 0 8px var(--accent-glow);width:32px;}
+  50%{box-shadow:0 0 8px var(--accent),0 0 20px var(--accent-glow);width:48px;}
+}
+section h2 { font-size: clamp(28px,5vw,40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+section h2 .accent { color: var(--accent-light); }
+section .section-desc { font-size: 16px; color: var(--text-secondary); margin-bottom: 40px; max-width: 600px; }
+h3.sub-title { font-size: 20px; font-weight: 700; margin: 40px 0 16px; color: var(--text-primary); }
+
+/* 卡片 */
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+.card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+@media (max-width:768px) { .card-grid-3{grid-template-columns:1fr;} }
+@media (max-width:640px) { .card-grid{grid-template-columns:1fr;} }
+.card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 28px; backdrop-filter: blur(20px);
+  transition: transform 0.15s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+  position: relative; overflow: hidden; transform-style: preserve-3d; will-change: transform;
+}
+.card::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius);
+  background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(124,91,245,0.08), transparent 40%);
+  pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
+}
+.card:hover::after { opacity: 1; }
+.card:hover { border-color: var(--border-hover); }
+.card::before {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius); padding: 1px;
+  background: linear-gradient(135deg, rgba(124,91,245,0), rgba(124,91,245,0.3), rgba(244,114,182,0));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+}
+.card:hover::before { opacity: 1; }
+.card:hover { transform: translateY(-4px); background: var(--bg-card-hover); box-shadow: 0 20px 60px rgba(124,91,245,0.08); }
+.card-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px;
+}
+.card-icon.purple { background: rgba(124,91,245,0.12); color: var(--accent-light); }
+.card-icon.pink { background: rgba(244,114,182,0.12); color: var(--accent-secondary); }
+.card-icon.blue { background: rgba(56,189,248,0.12); color: var(--accent-tertiary); }
+.card-icon.green { background: rgba(52,211,153,0.12); color: #34d399; }
+.card-icon.amber { background: rgba(251,191,36,0.12); color: #fbbf24; }
+.card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+/* 命令网格 */
+.cmd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.cmd-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0; }
+@media (max-width:768px) { .cmd-grid-3{grid-template-columns:1fr;} }
+@media (max-width:640px) { .cmd-grid{grid-template-columns:1fr;} }
+.cmd-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  backdrop-filter: blur(20px); transition: all 0.3s ease;
+}
+.cmd-item:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+.cmd-item .key {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+  background: rgba(124,91,245,0.1); border: 1px solid rgba(124,91,245,0.15);
+  padding: 4px 10px; border-radius: 6px; color: var(--accent-light); white-space: nowrap;
+  min-width: 80px; text-align: center;
+}
+.cmd-item .key.pink { background: rgba(244,114,182,0.1); border-color: rgba(244,114,182,0.15); color: var(--accent-secondary); }
+.cmd-item .key.blue { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.15); color: var(--accent-tertiary); }
+.cmd-item .key.green { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.15); color: #34d399; }
+.cmd-item .key.amber { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.15); color: #fbbf24; }
+.cmd-item .desc { font-size: 13px; color: var(--text-secondary); }
+
+/* 代码块 */
+.code-block {
+  background: #0d0d14; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  overflow: hidden; margin: 16px 0;
+}
+.code-header {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border);
+}
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-dot.red { background: #ff5f56; }
+.code-dot.yellow { background: #ffbd2e; }
+.code-dot.green { background: #27c93f; }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); margin-left: 8px; }
+.code-block pre {
+  padding: 18px 20px; font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px; line-height: 1.7; color: var(--accent-light); overflow-x: auto;
+}
+
+/* 表格 */
+.config-table-wrap {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; margin: 16px 0; backdrop-filter: blur(20px);
+}
+.config-table-title {
+  display: flex; align-items: center; gap: 10px; padding: 14px 20px;
+  font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.config-table { width: 100%; border-collapse: collapse; }
+.config-table th {
+  text-align: left; padding: 12px 20px; font-size: 11px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+}
+.config-table td {
+  padding: 12px 20px; font-size: 14px; border-bottom: 1px solid var(--border);
+}
+.config-table tr:last-child td { border-bottom: none; }
+.config-table td code {
+  font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+  background: rgba(124, 91, 245, 0.08); padding: 3px 8px; border-radius: 4px; color: var(--accent-light);
+}
+
+/* 提示框 */
+.tip {
+  display: flex; gap: 12px; padding: 16px 20px; border-radius: var(--radius-sm);
+  margin: 20px 0; font-size: 14px; line-height: 1.6; border: 1px solid;
+}
+.tip.info { background: rgba(56,189,248,0.05); border-color: rgba(56,189,248,0.15); color: var(--accent-tertiary); }
+.tip.info .tip-icon { color: var(--accent-tertiary); }
+.tip.warn { background: rgba(251,191,36,0.05); border-color: rgba(251,191,36,0.15); color: #fbbf24; }
+.tip.warn .tip-icon { color: #fbbf24; }
+.tip.success { background: rgba(52,211,153,0.05); border-color: rgba(52,211,153,0.15); color: #34d399; }
+.tip.success .tip-icon { color: #34d399; }
+.tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.tip code {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 3px;
+}
+
+/* 比较卡片 */
+.compare-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+@media (max-width:640px) { .compare-cards{grid-template-columns:1fr;} }
+.compare-card {
+  padding: 24px; border-radius: var(--radius); background: var(--bg-card);
+  border: 1px solid var(--border); transition: all 0.4s ease;
+}
+.compare-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.compare-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.compare-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.compare-card .example {
+  margin-top: 12px; padding: 10px 14px; background: rgba(0,0,0,0.3);
+  border-radius: var(--radius-sm); font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px; color: var(--accent-light);
+}
+
+/* 交互提示 */
+.interactive-prompt {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 20px; margin: 16px 0; display: flex; align-items: flex-start; gap: 14px;
+  backdrop-filter: blur(20px); transition: all 0.3s ease;
+}
+.interactive-prompt:hover { border-color: var(--border-hover); box-shadow: 0 0 30px rgba(124,91,245,0.05); }
+.interactive-prompt .prompt-symbol {
+  font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700;
+  color: var(--accent); flex-shrink: 0; margin-top: 1px;
+}
+.interactive-prompt .prompt-text { font-size: 14px; color: var(--text-secondary); }
+.interactive-prompt .prompt-text strong { color: var(--text-primary); }
+
+/* 标签 */
+.tag {
+  display: inline-block; padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 600; margin-right: 6px;
+}
+.tag.purple { background: rgba(124,91,245,0.12); color: var(--accent-light); }
+.tag.pink { background: rgba(244,114,182,0.12); color: var(--accent-secondary); }
+.tag.blue { background: rgba(56,189,248,0.12); color: var(--accent-tertiary); }
+.tag.green { background: rgba(52,211,153,0.12); color: #34d399; }
+.tag.amber { background: rgba(251,191,36,0.12); color: #fbbf24; }
+
+/* 章节间导航 */
+.section-nav { display: flex; justify-content: center; padding: 24px 0 0; }
+.section-nav-next {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px;
+  font-size: 13px; font-weight: 600; color: var(--accent-light); text-decoration: none;
+  border-radius: 100px; border: 1px solid rgba(124,91,245,0.2);
+  background: rgba(124,91,245,0.05); transition: all 0.3s ease;
+}
+.section-nav-next:hover {
+  background: rgba(124,91,245,0.12); border-color: rgba(124,91,245,0.4);
+  transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,91,245,0.12);
+}
+.section-nav-next .arrow { transition: transform 0.3s ease; }
+.section-nav-next:hover .arrow { transform: translateX(4px); }
+
+/* 返回顶部 */
+.back-to-top {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin: 40px auto 0; padding: 10px 24px; width: fit-content;
+  font-size: 13px; font-weight: 500; color: var(--text-muted);
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px;
+  text-decoration: none; transition: all 0.3s ease; backdrop-filter: blur(20px);
+}
+.back-to-top:hover { color: var(--accent-light); border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,91,245,0.1); }
+.back-to-top svg { width: 14px; height: 14px; transition: transform 0.3s ease; }
+.back-to-top:hover svg { transform: translateY(-2px); }
+
+/* Footer */
+.footer { text-align: center; padding: 80px 0 60px; border-top: 1px solid var(--border); }
+.footer::before {
+  content: ''; display: block; width: 200px; height: 2px; margin: 0 auto 24px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-secondary), transparent);
+  animation: footer-line-glow 3s ease-in-out infinite;
+}
+@keyframes footer-line-glow {
+  0%,100%{box-shadow:0 0 8px var(--accent-glow);width:200px;} 50%{box-shadow:0 0 20px var(--accent-glow);width:300px;}
+}
+.footer p { font-size: 13px; color: var(--text-muted); }
+.footer a { color: var(--accent-light); text-decoration: none; border-bottom: 1px solid rgba(124,91,245,0.3); transition: border-color 0.3s ease; }
+.footer a:hover { border-color: var(--accent); }
+
+/* 入场动画 */
+.fade-in { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.16,1,0.3,1); }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* 光标跟随 */
+.cursor-glow {
+  position: fixed; width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,91,245,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0; transform: translate(-50%,-50%);
+  transition: left 0.15s ease-out, top 0.15s ease-out;
+}
+
+/* CRT */
+.crt-overlay {
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 3px);
+  animation: crt-flicker 0.1s infinite;
+}
+@keyframes crt-flicker { 0%{opacity:0.8;} 50%{opacity:0.85;} 100%{opacity:0.8;} }
+
+.scroll-scanline {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-secondary), var(--accent-tertiary), transparent);
+  z-index: 10000; pointer-events: none; opacity: 0.6;
+  transform-origin: left; transition: transform 0.1s linear;
+}
+
+/* Glitch */
+.glitch-text { position: relative; display: inline-block; }
+.glitch-text::before, .glitch-text::after {
+  content: attr(data-text); position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; opacity: 0;
+}
+.glitch-text:hover::before {
+  opacity: 0.8; color: var(--accent-tertiary);
+  animation: glitch-1 0.3s ease-in-out;
+  clip-path: polygon(0 0,100% 0,100% 45%,0 45%); transform: translate(-2px,-1px);
+}
+.glitch-text:hover::after {
+  opacity: 0.8; color: var(--accent-secondary);
+  animation: glitch-2 0.3s ease-in-out;
+  clip-path: polygon(0 55%,100% 55%,100% 100%,0 100%); transform: translate(2px,1px);
+}
+@keyframes glitch-1 {
+  0%{transform:translate(0);} 20%{transform:translate(-3px,2px);} 40%{transform:translate(3px,-1px);}
+  60%{transform:translate(-1px,1px);} 80%{transform:translate(2px,-2px);} 100%{transform:translate(0);}
+}
+@keyframes glitch-2 {
+  0%{transform:translate(0);} 20%{transform:translate(3px,-2px);} 40%{transform:translate(-3px,1px);}
+  60%{transform:translate(1px,-1px);} 80%{transform:translate(-2px,2px);} 100%{transform:translate(0);}
+}
+
+.neon-border { position: relative; }
+.neon-border::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
+  background: linear-gradient(var(--neon-angle,0deg), var(--accent), var(--accent-secondary), var(--accent-tertiary), var(--accent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; transition: opacity 0.5s ease; animation: neon-rotate 4s linear infinite;
+}
+.neon-border:hover::before { opacity: 1; }
+@keyframes neon-rotate { to{--neon-angle:360deg;} }
+@property --neon-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+.scan-beam { position: relative; overflow: hidden; }
+.scan-beam::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(124,91,245,0.06), rgba(244,114,182,0.08), rgba(56,189,248,0.06), transparent);
+  animation: scan-beam-move 6s ease-in-out infinite; pointer-events: none;
+}
+@keyframes scan-beam-move { 0%{left:-60%;} 50%{left:100%;} 100%{left:-60%;} }
+
+.holo-shimmer { position: relative; overflow: hidden; }
+.holo-shimmer::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(124,91,245,0.06) 45%, rgba(244,114,182,0.06) 50%, rgba(56,189,248,0.06) 55%, transparent 60%);
+  background-size: 200% 100%; animation: holo-shift 5s ease-in-out infinite; pointer-events: none; z-index: 1;
+}
+@keyframes holo-shift { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+
+/* 流程图 */
+.flow-diagram {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin: 32px 0; flex-wrap: wrap;
+}
+.flow-node {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 20px 18px; min-width: 130px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  backdrop-filter: blur(20px); transition: all 0.4s ease;
+}
+.flow-node:hover { transform: translateY(-4px); border-color: var(--border-hover); box-shadow: 0 12px 40px rgba(124,91,245,0.1); }
+.flow-node .icon { font-size: 28px; margin-bottom: 2px; }
+.flow-node .label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.flow-node .sub { font-size: 11px; color: var(--text-muted); text-align: center; }
+.flow-arrow { font-size: 22px; color: var(--accent); padding: 0 6px; animation: arrow-pulse 2s ease-in-out infinite; }
+@keyframes arrow-pulse { 0%,100%{opacity:0.4;transform:translateX(0);} 50%{opacity:1;transform:translateX(4px);} }
+@media (max-width:700px) { .flow-diagram{flex-direction:column;} .flow-arrow{transform:rotate(90deg);} }
+</style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="top-nav" id="topNav">
+  <span class="nav-brand">CC <span class="accent">Guide</span></span>
+  <a href="#overview"><span class="num">01</span>概览</a>
+  <a href="#cli"><span class="num">02</span>CLI 命令</a>
+  <a href="#slash"><span class="num">03</span>斜杠命令</a>
+  <a href="#at-mentions"><span class="num">04</span>@ 引用</a>
+  <a href="#keyboard"><span class="num">05</span>快捷键</a>
+  <a href="#claude-md"><span class="num">06</span>CLAUDE.md</a>
+  <a href="#mcp"><span class="num">07</span>MCP 服务</a>
+  <a href="#advanced"><span class="num">08</span>进阶技巧</a>
+</nav>
+
+<!-- 全局背景 -->
+<div class="global-bg">
+  <div class="orb"></div>
+</div>
+<div class="grid-bg"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="crt-overlay"></div>
+<div class="scroll-scanline" id="scrollScanline"></div>
+
+<!-- 侧边导航 -->
+<nav class="toc" id="toc">
+  <a href="#overview" data-section="overview"><span class="dot"></span><span class="num">01</span><span class="label">概览</span></a>
+  <a href="#cli" data-section="cli"><span class="dot"></span><span class="num">02</span><span class="label">CLI 命令</span></a>
+  <a href="#slash" data-section="slash"><span class="dot"></span><span class="num">03</span><span class="label">斜杠命令</span></a>
+  <a href="#at-mentions" data-section="at-mentions"><span class="dot"></span><span class="num">04</span><span class="label">@ 引用</span></a>
+  <a href="#keyboard" data-section="keyboard"><span class="dot"></span><span class="num">05</span><span class="label">快捷键</span></a>
+  <a href="#claude-md" data-section="claude-md"><span class="dot"></span><span class="num">06</span><span class="label">CLAUDE.md</span></a>
+  <a href="#mcp" data-section="mcp"><span class="dot"></span><span class="num">07</span><span class="label">MCP 服务</span></a>
+  <a href="#advanced" data-section="advanced"><span class="dot"></span><span class="num">08</span><span class="label">进阶技巧</span></a>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-badge electric-pulse">Vibe Coding Mastery</div>
+  <h1><span class="glitch-text" data-text="Vibe Coding">Vibe Coding</span><br><span class="gradient-text">工具使用技巧</span></h1>
+  <p class="hero-subtitle">掌握 Claude Code 的全部命令、快捷键与高级技巧，让 AI 编程如丝般顺滑</p>
+</section>
+
+<div class="container">
+
+<!-- 1. 概览 -->
+<section id="overview">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 01</div>
+    <h2><span class="glitch-text" data-text="什么是">什么是</span> <span class="accent">Vibe Coding</span></h2>
+    <p class="section-desc">Vibe Coding 是 Andrej Karpathy 提出的全新编程范式——用自然语言描述意图，让 AI 帮你写代码。Claude Code 是这一理念的核心工具。</p>
+  </div>
+
+  <div class="flow-diagram fade-in">
+    <div class="flow-node neon-border scan-beam">
+      <div class="icon">💬</div>
+      <div class="label">描述需求</div>
+      <div class="sub">自然语言</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node neon-border scan-beam">
+      <div class="icon">🤖</div>
+      <div class="label">Claude 理解</div>
+      <div class="sub">上下文感知</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node neon-border scan-beam">
+      <div class="icon">⚡</div>
+      <div class="label">生成代码</div>
+      <div class="sub">自动编辑</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-node neon-border scan-beam">
+      <div class="icon">✅</div>
+      <div class="label">验证运行</div>
+      <div class="sub">测试修复</div>
+    </div>
+  </div>
+
+  <div class="tip info fade-in">
+    <span class="tip-icon">i</span>
+    <span>Vibe Coding 的核心：你专注于"做什么"，Claude 负责"怎么做"。掌握下面的命令和技巧，效率提升 10 倍。</span>
+  </div>
+  <div class="section-nav"><a href="#cli" class="section-nav-next">CLI 命令 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 2. CLI 终端命令 -->
+<section id="cli">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 02</div>
+    <h2><span class="glitch-text" data-text="CLI">CLI</span> <span class="accent">终端命令</span></h2>
+    <p class="section-desc">在终端中启动和管理 Claude Code 的所有命令行选项。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">基础启动</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key">claude</span><span class="desc">启动交互式会话</span></div>
+      <div class="cmd-item"><span class="key">claude "提示"</span><span class="desc">带初始提示启动</span></div>
+      <div class="cmd-item"><span class="key">claude -p "提示"</span><span class="desc">非交互模式（输出后退出）</span></div>
+      <div class="cmd-item"><span class="key">claude -c</span><span class="desc">继续最近一次对话</span></div>
+      <div class="cmd-item"><span class="key">claude -r</span><span class="desc">选择并恢复历史会话</span></div>
+      <div class="cmd-item"><span class="key">claude -r &lt;id&gt;</span><span class="desc">恢复指定会话</span></div>
+      <div class="cmd-item"><span class="key">claude -v</span><span class="desc">查看版本号</span></div>
+      <div class="cmd-item"><span class="key">claude -h</span><span class="desc">查看帮助信息</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">模型与努力级别</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key blue">--model sonnet</span><span class="desc">指定模型（sonnet / opus / haiku）</span></div>
+      <div class="cmd-item"><span class="key blue">--effort high</span><span class="desc">努力级别：low / medium / high / max</span></div>
+      <div class="cmd-item"><span class="key blue">--fallback-model</span><span class="desc">模型过载时的备选模型</span></div>
+      <div class="cmd-item"><span class="key blue">--bare</span><span class="desc">极简模式：跳过 hooks、插件、CLAUDE.md</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">会话管理</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key green">-n "名称"</span><span class="desc">为会话命名，方便 /resume 识别</span></div>
+      <div class="cmd-item"><span class="key green">--session-id &lt;uuid&gt;</span><span class="desc">使用指定会话 ID</span></div>
+      <div class="cmd-item"><span class="key green">--fork-session</span><span class="desc">恢复时创建新会话分支</span></div>
+      <div class="cmd-item"><span class="key green">--from-pr &lt;id&gt;</span><span class="desc">恢复关联 PR 的会话</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">权限与安全</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key amber">--permission-mode plan</span><span class="desc">先规划再执行</span></div>
+      <div class="cmd-item"><span class="key amber">--allowedTools "Bash(git *)"</span><span class="desc">预批准特定工具</span></div>
+      <div class="cmd-item"><span class="key amber">--disallowedTools</span><span class="desc">禁止特定工具</span></div>
+      <div class="cmd-item"><span class="key amber">--max-budget-usd 5</span><span class="desc">设置 API 花费上限（美元）</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 class="sub-title">输出与集成</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key pink">--output-format json</span><span class="desc">输出格式：text / json / stream-json</span></div>
+      <div class="cmd-item"><span class="key pink">--json-schema &lt;schema&gt;</span><span class="desc">结构化输出验证</span></div>
+      <div class="cmd-item"><span class="key pink">--ide</span><span class="desc">自动连接 IDE</span></div>
+      <div class="cmd-item"><span class="key pink">--add-dir ../lib</span><span class="desc">添加额外目录访问权限</span></div>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#slash" class="section-nav-next">斜杠命令 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 3. 斜杠命令 -->
+<section id="slash">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 03</div>
+    <h2><span class="glitch-text" data-text="斜杠">斜杠</span> <span class="accent">/ 命令</span></h2>
+    <p class="section-desc">在 Claude Code 会话中输入 <code>/</code> 开头的命令，快速执行各种操作。已安装的 Skills 也会注册为斜杠命令。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">内置命令</h3>
+    <div class="config-table-wrap">
+      <div class="config-table-title"><span class="icon">⚡</span> 核心命令</div>
+      <table class="config-table">
+        <thead><tr><th>命令</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>/help</code></td><td>查看所有可用命令和使用提示</td></tr>
+          <tr><td><code>/clear</code></td><td>清空当前对话上下文，重新开始</td></tr>
+          <tr><td><code>/compact</code></td><td>压缩对话以节省 token，保留关键信息</td></tr>
+          <tr><td><code>/config</code></td><td>打开或修改 Claude Code 设置</td></tr>
+          <tr><td><code>/cost</code></td><td>查看当前会话的 token 用量和费用</td></tr>
+          <tr><td><code>/doctor</code></td><td>检查 Claude Code 安装健康状态</td></tr>
+          <tr><td><code>/init</code></td><td>为当前项目初始化 CLAUDE.md 文件</td></tr>
+          <tr><td><code>/memory</code></td><td>编辑 CLAUDE.md 记忆文件</td></tr>
+          <tr><td><code>/model</code></td><td>切换当前会话的模型</td></tr>
+          <tr><td><code>/permissions</code></td><td>查看和修改工具权限</td></tr>
+          <tr><td><code>/resume</code></td><td>恢复之前的对话</td></tr>
+          <tr><td><code>/review</code></td><td>审查 Pull Request</td></tr>
+          <tr><td><code>/status</code></td><td>显示认证状态和会话信息</td></tr>
+          <tr><td><code>/vim</code></td><td>切换 vim 编辑模式</td></tr>
+          <tr><td><code>/terminal-setup</code></td><td>设置终端集成（启用 Shift+Enter 换行）</td></tr>
+          <tr><td><code>/bug</code></td><td>向 Anthropic 报告 bug</td></tr>
+          <tr><td><code>/login</code></td><td>登录 Anthropic 账号</td></tr>
+          <tr><td><code>/logout</code></td><td>退出登录</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">Skill 注册的命令</h3>
+    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">每个已安装的 Skill 都会自动注册为斜杠命令。输入 <code>/</code> 即可查看完整列表。</p>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key pink">/tavily-search</span><span class="desc">AI 优化的网页搜索</span></div>
+      <div class="cmd-item"><span class="key pink">/tavily-extract</span><span class="desc">提取网页内容为 Markdown</span></div>
+      <div class="cmd-item"><span class="key pink">/tavily-crawl</span><span class="desc">爬取网站内容</span></div>
+      <div class="cmd-item"><span class="key pink">/openalex-paper-search</span><span class="desc">学术论文检索</span></div>
+      <div class="cmd-item"><span class="key pink">/semantic-scholar</span><span class="desc">Semantic Scholar 论文搜索</span></div>
+      <div class="cmd-item"><span class="key pink">/pdf</span><span class="desc">PDF 文件读取与生成</span></div>
+      <div class="cmd-item"><span class="key pink">/claude-api</span><span class="desc">Claude API 开发辅助</span></div>
+      <div class="cmd-item"><span class="key pink">/simplify</span><span class="desc">代码审查与优化</span></div>
+      <div class="cmd-item"><span class="key pink">/review</span><span class="desc">PR 代码审查</span></div>
+      <div class="cmd-item"><span class="key pink">/grill-me</span><span class="desc">设计评审访谈</span></div>
+      <div class="cmd-item"><span class="key pink">/find-skills</span><span class="desc">发现并安装新 Skills</span></div>
+      <div class="cmd-item"><span class="key pink">/self-improvement</span><span class="desc">记录学习与错误</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 class="sub-title">Skill 使用方式</h3>
+    <div class="compare-cards">
+      <div class="compare-card">
+        <h4><span class="tag purple">/</span> 显式调用</h4>
+        <p>用 <code>/</code> 前缀直接触发特定 Skill</p>
+        <div class="example">/tavily-search 人工智能最新进展</div>
+      </div>
+      <div class="compare-card">
+        <h4><span class="tag pink">~</span> 隐式触发</h4>
+        <p>用自然语言描述需求，Claude 自动匹配最合适的 Skill</p>
+        <div class="example">"帮我搜一下最新的 AI 论文"</div>
+      </div>
+    </div>
+    <div class="tip info">
+      <span class="tip-icon">i</span>
+      <span>输入 <code>/</code> 不带任何参数，可以查看当前已安装的所有 Skills 列表。</span>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#at-mentions" class="section-nav-next">@ 引用 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 4. @ 引用 -->
+<section id="at-mentions">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 04</div>
+    <h2><span class="glitch-text" data-text="@">@</span> <span class="accent">引用与特殊语法</span></h2>
+    <p class="section-desc">用 <code>@</code> 引用文件和文件夹，让 Claude 精确理解你要操作的上下文。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">@ 文件引用</h3>
+    <div class="config-table-wrap">
+      <table class="config-table">
+        <thead><tr><th>语法</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>@filename.txt</code></td><td>引用指定文件（触发自动补全）</td></tr>
+          <tr><td><code>@path/to/folder/</code></td><td>引用整个目录</td></tr>
+          <tr><td><code>@src/file.py:10-20</code></td><td>引用文件的指定行范围</td></tr>
+          <tr><td><code>@</code> + Tab</td><td>浏览并交互式选择文件</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip success">
+      <span class="tip-icon">✓</span>
+      <span>最佳实践：在提示中用 <code>@</code> 指向相关文件，如 <code>"重构 @src/utils.ts 使用 async/await"</code>，比笼统描述高效得多。</span>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">其他特殊语法</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key">!command</span><span class="desc">直接执行 shell 命令（前缀 <code>!</code>）</span></div>
+      <div class="cmd-item"><span class="key">Ctrl+V</span><span class="desc">粘贴剪贴板图片到对话中</span></div>
+      <div class="cmd-item"><span class="key">拖拽文件</span><span class="desc">将文件拖入终端窗口自动添加路径</span></div>
+      <div class="cmd-item"><span class="key">Shift+Enter</span><span class="desc">多行输入（需先运行 /terminal-setup）</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 class="sub-title">上下文感知能力</h3>
+    <div class="card-grid">
+      <div class="card neon-border scan-beam">
+        <div class="card-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>自然语言交互</h3>
+        <p>在终端或 VS Code 中直接用自然语言描述需求，Claude 自动理解上下文</p>
+      </div>
+      <div class="card neon-border scan-beam">
+        <div class="card-icon pink">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h3>代码上下文感知</h3>
+        <p>Claude Code 自动读取项目结构和代码，无需手动解释项目背景</p>
+      </div>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#keyboard" class="section-nav-next">快捷键 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 5. 快捷键 -->
+<section id="keyboard">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 05</div>
+    <h2><span class="glitch-text" data-text="键盘">键盘</span> <span class="accent">快捷键</span></h2>
+    <p class="section-desc">掌握这些快捷键，操作如行云流水。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">输入控制</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key">Enter</span><span class="desc">发送消息</span></div>
+      <div class="cmd-item"><span class="key">Shift+Enter</span><span class="desc">输入换行（需 /terminal-setup）</span></div>
+      <div class="cmd-item"><span class="key">Tab</span><span class="desc">接受自动补全建议</span></div>
+      <div class="cmd-item"><span class="key">Escape</span><span class="desc">取消输入 / 关闭弹窗</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">编辑快捷键</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key">Ctrl+A</span><span class="desc">光标移到行首</span></div>
+      <div class="cmd-item"><span class="key">Ctrl+E</span><span class="desc">光标移到行尾</span></div>
+      <div class="cmd-item"><span class="key">Ctrl+U</span><span class="desc">清空当前输入行</span></div>
+      <div class="cmd-item"><span class="key">Ctrl+W</span><span class="desc">向前删除一个单词</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">导航与历史</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key">↑ Arrow</span><span class="desc">上一条历史消息</span></div>
+      <div class="cmd-item"><span class="key">↓ Arrow</span><span class="desc">下一条历史消息</span></div>
+      <div class="cmd-item"><span class="key">Ctrl+L</span><span class="desc">清空终端屏幕</span></div>
+      <div class="cmd-item"><span class="key">Ctrl+K</span><span class="desc">终止当前进程</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 class="sub-title">会话控制</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key pink">Ctrl+C</span><span class="desc">中断当前生成 / 复制选中文本</span></div>
+      <div class="cmd-item"><span class="key pink">Ctrl+D</span><span class="desc">退出 Claude Code</span></div>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#claude-md" class="section-nav-next">CLAUDE.md <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 6. CLAUDE.md -->
+<section id="claude-md">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 06</div>
+    <h2><span class="glitch-text" data-text="CLAUDE.md">CLAUDE.md</span> <span class="accent">项目记忆</span></h2>
+    <p class="section-desc">CLAUDE.md 是 Claude Code 的"项目大脑"——每次会话开始时自动读取，让 Claude 记住你的偏好和项目规范。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">文件位置（按加载顺序）</h3>
+    <div class="config-table-wrap">
+      <table class="config-table">
+        <thead><tr><th>范围</th><th>路径</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag purple">全局</span> 所有项目</td><td><code>~/.claude/CLAUDE.md</code></td></tr>
+          <tr><td><span class="tag blue">项目根目录</span></td><td><code>&lt;project&gt;/CLAUDE.md</code></td></tr>
+          <tr><td><span class="tag blue">父目录</span></td><td><code>../CLAUDE.md</code>, <code>../../CLAUDE.md</code></td></tr>
+          <tr><td><span class="tag green">子目录</span></td><td><code>src/CLAUDE.md</code>, <code>tests/CLAUDE.md</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">最佳实践</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h3>保持简洁</h3>
+        <p>每一行都会在每次对话中消耗 token，只写真正需要的内容</p>
+      </div>
+      <div class="card">
+        <div class="card-icon purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>行为规则</h3>
+        <p>写"始终做 X"和"绝不做 Y"类型的指令，如编码规范、测试命令</p>
+      </div>
+      <div class="card">
+        <div class="card-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h3>项目信息</h3>
+        <p>包含构建命令、部署步骤、架构决策等关键上下文</p>
+      </div>
+      <div class="card">
+        <div class="card-icon pink">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h3>用 /init 自动生成</h3>
+        <p>运行 <code>/init</code> 让 Claude 从代码库自动生成初始 CLAUDE.md</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">记忆系统</h3>
+    <div class="config-table-wrap">
+      <div class="config-table-title"><span class="icon">🧠</span> Memory 文件</div>
+      <table class="config-table">
+        <thead><tr><th>路径</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>~/.claude/memory/MEMORY.md</code></td><td>全局记忆（跨项目持久化）</td></tr>
+          <tr><td><code>&lt;project&gt;/.claude/memory/</code></td><td>项目级记忆目录</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="interactive-prompt">
+      <span class="prompt-symbol">></span>
+      <span class="prompt-text"><strong>你：</strong>以后帮我写代码时不要加注释</span>
+    </div>
+    <div class="interactive-prompt">
+      <span class="prompt-symbol" style="color:var(--accent-secondary);">~</span>
+      <span class="prompt-text"><strong>Claude：</strong>已记住，后续代码生成将不再添加注释。</span>
+    </div>
+    <div class="tip info">
+      <span class="tip-icon">i</span>
+      <span>直接用自然语言告诉 Claude 你的偏好，它会自动保存到记忆文件中，后续对话自动生效。</span>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#mcp" class="section-nav-next">MCP 服务 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 7. MCP 服务 -->
+<section id="mcp">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 07</div>
+    <h2><span class="glitch-text" data-text="MCP">MCP</span> <span class="accent">模型上下文协议</span></h2>
+    <p class="section-desc">MCP 服务器为 Claude Code 扩展外部工具和数据源，连接数据库、API、文件系统等。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">配置位置</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key">~/.claude/settings.json</span><span class="desc">全局配置</span></div>
+      <div class="cmd-item"><span class="key">.mcp.json</span><span class="desc">项目根目录（项目级）</span></div>
+      <div class="cmd-item"><span class="key">--mcp-config</span><span class="desc">启动参数（会话级）</span></div>
+      <div class="cmd-item"><span class="key">--strict-mcp-config</span><span class="desc">仅使用指定的 MCP 服务器</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">CLI 管理命令</h3>
+    <div class="config-table-wrap">
+      <table class="config-table">
+        <thead><tr><th>命令</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>claude mcp add &lt;name&gt; &lt;cmd&gt;</code></td><td>添加 MCP 服务器</td></tr>
+          <tr><td><code>claude mcp add --transport http ...</code></td><td>添加 HTTP 类型的 MCP 服务器</td></tr>
+          <tr><td><code>claude mcp add-json &lt;name&gt; &lt;json&gt;</code></td><td>从 JSON 添加 MCP 服务器</td></tr>
+          <tr><td><code>claude mcp add-from-claude-desktop</code></td><td>从 Claude Desktop 导入配置</td></tr>
+          <tr><td><code>claude mcp list</code></td><td>列出已配置的服务器</td></tr>
+          <tr><td><code>claude mcp get &lt;name&gt;</code></td><td>查看服务器详情</td></tr>
+          <tr><td><code>claude mcp remove &lt;name&gt;</code></td><td>移除服务器</td></tr>
+          <tr><td><code>claude mcp serve</code></td><td>将 Claude Code 作为 MCP 服务器启动</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 class="sub-title">配置示例</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span>
+        <span class="code-lang">.mcp.json</span>
+      </div>
+      <pre>{
+  "mcpServers": {
+    "my-server": {
+      "command": "npx",
+      "args": ["my-mcp-server"],
+      "env": { "API_KEY": "xxx" }
+    },
+    "http-server": {
+      "type": "http",
+      "url": "https://mcp.example.com/mcp",
+      "headers": { "Authorization": "Bearer xxx" }
+    }
+  }
+}</pre>
+    </div>
+  </div>
+  <div class="section-nav"><a href="#advanced" class="section-nav-next">进阶技巧 <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 8. 进阶技巧 -->
+<section id="advanced">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 08</div>
+    <h2><span class="glitch-text" data-text="进阶">进阶</span> <span class="accent">高级技巧</span></h2>
+    <p class="section-desc">从后台 Agent 到 Git Worktree，解锁 Claude Code 的全部潜力。</p>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">后台 Agent</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key">claude agents</span><span class="desc">打开交互式 Agent 管理界面</span></div>
+      <div class="cmd-item"><span class="key">claude agents --json</span><span class="desc">以 JSON 列出活跃会话</span></div>
+      <div class="cmd-item"><span class="key">--agent &lt;name&gt;</span><span class="desc">使用指定 Agent 启动会话</span></div>
+      <div class="cmd-item"><span class="key">--brief</span><span class="desc">启用 Agent 与用户通信</span></div>
+    </div>
+    <div class="tip info">
+      <span class="tip-icon">i</span>
+      <span>后台 Agent 可以在你继续工作的同时执行长任务，每个 Agent 拥有独立的会话、模型和权限配置。</span>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">Git Worktree 隔离工作区</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key green">claude -w my-feature</span><span class="desc">创建新的 git worktree 工作区</span></div>
+      <div class="cmd-item"><span class="key green">claude -w --tmux</span><span class="desc">Worktree + tmux 会话</span></div>
+      <div class="cmd-item"><span class="key green">--from-pr &lt;id&gt;</span><span class="desc">恢复关联 PR 的工作</span></div>
+      <div class="cmd-item"><span class="key green">--fork-session</span><span class="desc">分支出会话而不影响原会话</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">代码审查</h3>
+    <div class="cmd-grid">
+      <div class="cmd-item"><span class="key pink">/review</span><span class="desc">在会话中审查 Pull Request</span></div>
+      <div class="cmd-item"><span class="key pink">claude ultrareview</span><span class="desc">云端多 Agent 深度代码审查</span></div>
+      <div class="cmd-item"><span class="key pink">claude ultrareview 123</span><span class="desc">审查指定 PR #123</span></div>
+      <div class="cmd-item"><span class="key pink">claude ultrareview main</span><span class="desc">对比 main 分支审查</span></div>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">Hooks 自动化</h3>
+    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">Hooks 在特定生命周期事件触发自定义脚本，配置在 <code>settings.json</code> 中。</p>
+    <div class="config-table-wrap">
+      <table class="config-table">
+        <thead><tr><th>事件</th><th>触发时机</th></tr></thead>
+        <tbody>
+          <tr><td><code>PreToolUse</code></td><td>工具执行前</td></tr>
+          <tr><td><code>PostToolUse</code></td><td>工具执行后</td></tr>
+          <tr><td><code>Notification</code></td><td>Claude 发送通知时</td></tr>
+          <tr><td><code>Stop</code></td><td>Claude 完成回复时</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span>
+        <span class="code-lang">settings.json</span>
+      </div>
+      <pre>{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": "echo '即将执行 Bash 命令'"
+      }]
+    }]
+  }
+}</pre>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-bottom:36px;">
+    <h3 class="sub-title">Vibe Coding 最佳实践</h3>
+    <div class="card-grid-3">
+      <div class="card neon-border scan-beam">
+        <div class="card-icon purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>先写 CLAUDE.md</h3>
+        <p>编码规范、构建命令、架构笔记——让 Claude 开工前就了解项目</p>
+      </div>
+      <div class="card neon-border scan-beam">
+        <div class="card-icon pink">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>提示要具体</h3>
+        <p>"给 UserForm 的 email 字段加输入验证" 比 "修一下表单" 好 10 倍</p>
+      </div>
+      <div class="card neon-border scan-beam">
+        <div class="card-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h3>用 @ 引用文件</h3>
+        <p>精确指向相关文件，避免 Claude 猜测上下文</p>
+      </div>
+      <div class="card neon-border scan-beam">
+        <div class="card-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h3>先写测试再实现</h3>
+        <p>让 Claude 先写测试，再实现功能，然后 "运行测试修复失败"</p>
+      </div>
+      <div class="card neon-border scan-beam">
+        <div class="card-icon amber">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>用 /compact 省 token</h3>
+        <p>对话变长时运行 /compact，压缩上下文保留关键信息</p>
+      </div>
+      <div class="card neon-border scan-beam">
+        <div class="card-icon pink">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        </div>
+        <h3>-c 继续对话</h3>
+        <p>用 <code>claude -c</code> 无缝继续上次的工作，不用重新解释上下文</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <h3 class="sub-title">关键文件速查</h3>
+    <div class="config-table-wrap">
+      <table class="config-table">
+        <thead><tr><th>文件/目录</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>~/.claude/CLAUDE.md</code></td><td>全局指令（所有项目生效）</td></tr>
+          <tr><td><code>&lt;project&gt;/CLAUDE.md</code></td><td>项目级指令</td></tr>
+          <tr><td><code>~/.claude/settings.json</code></td><td>全局设置（模型、权限、Hooks、MCP）</td></tr>
+          <tr><td><code>&lt;project&gt;/.mcp.json</code></td><td>项目 MCP 服务器配置</td></tr>
+          <tr><td><code>~/.claude/memory/MEMORY.md</code></td><td>跨会话持久记忆</td></tr>
+          <tr><td><code>~/.claude/skills/</code></td><td>已安装的 Skills 目录</td></tr>
+          <tr><td><code>~/.claude/plugins/</code></td><td>已安装的插件目录</td></tr>
+          <tr><td><code>~/.claude/sessions/</code></td><td>保存的会话记录</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-nav"><a href="#hero" class="section-nav-next">回到顶部 <span class="arrow">&uarr;</span></a></div>
+</section>
+
+<!-- Footer -->
+<div class="footer fade-in">
+  <a href="#hero" class="back-to-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    回到顶部
+  </a>
+  <p style="margin-top:32px;">深入学习：<a href="index.html">Claude Code 入门</a> · <a href="api-intro.html">什么是 API</a> · <a href="claude-code-intro.html">什么是 Claude Code</a> · <a href="paper-to-tex.html">实战：论文转 LaTeX</a></p>
+  <p style="margin-top:12px;">遇到问题？前往 <a href="https://github.com/anthropics/claude-code/issues" target="_blank">Claude Code GitHub</a> 提交反馈</p>
+  <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Made with Claude Code</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+// 光标跟随
+const glow = document.getElementById('cursorGlow');
+let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0;
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+(function animateGlow() {
+  glowX += (mouseX - glowX) * 0.08;
+  glowY += (mouseY - glowY) * 0.08;
+  glow.style.left = glowX + 'px';
+  glow.style.top = glowY + 'px';
+  requestAnimationFrame(animateGlow);
+})();
+
+// 粒子尾随 Canvas
+(function() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'particleCanvas';
+  canvas.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  const particles = [];
+  const colors = ['rgba(124,91,245,', 'rgba(244,114,182,', 'rgba(56,189,248,'];
+  document.addEventListener('mousemove', e => {
+    for (let i = 0; i < 2; i++) {
+      particles.push({
+        x: e.clientX, y: e.clientY,
+        vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2 - 1,
+        life: 1, decay: 0.015 + Math.random() * 0.015,
+        size: 2 + Math.random() * 3,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+  });
+  function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy; p.vy += 0.02; p.life -= p.decay;
+      if (p.life <= 0) { particles.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.life * 0.6 + ')';
+      ctx.fill();
+    }
+    if (particles.length > 200) particles.splice(0, particles.length - 200);
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+})();
+
+// 浮动粒子背景
+(function() {
+  const container = document.querySelector('.global-bg');
+  for (let i = 0; i < 30; i++) {
+    const dot = document.createElement('div');
+    const size = 2 + Math.random() * 4;
+    dot.style.cssText = `
+      position:absolute;width:${size}px;height:${size}px;border-radius:50%;
+      background:rgba(124,91,245,${0.15 + Math.random() * 0.25});
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      animation:float-particle ${15+Math.random()*20}s linear infinite;
+      animation-delay:${-Math.random()*20}s;
+    `;
+    container.appendChild(dot);
+  }
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes float-particle {
+      0% { transform: translate(0,0) scale(1); opacity:0; }
+      10% { opacity:1; } 90% { opacity:1; }
+      100% { transform: translate(${Math.random()>0.5?'':'-'}${50+Math.random()*100}px, ${-200-Math.random()*400}px) scale(0.5); opacity:0; }
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+// 卡片 3D 倾斜
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = `perspective(800px) rotateY(${x*12}deg) rotateX(${-y*12}deg) translateY(-4px)`;
+    card.style.setProperty('--mx', `${(x+0.5)*100}%`);
+    card.style.setProperty('--my', `${(y+0.5)*100}%`);
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(800px) rotateY(0) rotateX(0) translateY(0)';
+  });
+});
+
+// 磁吸按钮
+document.querySelectorAll('.section-nav-next, .hero-badge, .back-to-top').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = `translate(${x*0.3}px, ${y*0.3}px)`;
+  });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+});
+
+// 滚动入场动画
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.fade-in, .step').forEach(el => observer.observe(el));
+
+// 顶部导航栏
+const topNav = document.getElementById('topNav');
+const heroSection = document.getElementById('hero');
+const topNavObserver = new IntersectionObserver(entries => {
+  topNav.classList.toggle('visible', !entries[0].isIntersecting);
+}, { threshold: 0.1 });
+topNavObserver.observe(heroSection);
+
+// 导航高亮
+const sections = document.querySelectorAll('section[id]');
+const tocLinks = document.querySelectorAll('.toc a');
+const topNavLinks = document.querySelectorAll('.top-nav a');
+const navObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.getAttribute('id');
+      tocLinks.forEach(link => link.classList.toggle('active', link.getAttribute('data-section') === id));
+      topNavLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + id));
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-20% 0px -60% 0px' });
+sections.forEach(sec => navObserver.observe(sec));
+
+// 滚动视差 + 扫描线
+const scanline = document.getElementById('scrollScanline');
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const progress = scrollY / maxScroll;
+  document.querySelectorAll('.global-bg .orb').forEach(orb => {
+    orb.style.transform = `translate(0, ${scrollY * 0.15}px)`;
+  });
+  scanline.style.transform = `scaleX(${Number.isFinite(progress) ? progress : 0})`;
+}, { passive: true });
+
+// 赛博光标拖尾
+(function() {
+  const trails = [];
+  const TRAIL_COUNT = 8;
+  for (let i = 0; i < TRAIL_COUNT; i++) {
+    const dot = document.createElement('div');
+    dot.style.cssText = `
+      position:fixed;width:${6-i*0.5}px;height:${6-i*0.5}px;
+      border-radius:50%;pointer-events:none;z-index:9999;
+      background:rgba(124,91,245,${0.4-i*0.04});
+      box-shadow:0 0 ${8-i}px rgba(124,91,245,${0.3-i*0.03});
+      transition:transform ${0.05+i*0.02}s ease;
+      left:-100px;top:-100px;
+    `;
+    document.body.appendChild(dot);
+    trails.push(dot);
+  }
+  let tx = -100, ty = -100;
+  document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+  function animateTrail() {
+    let x = tx, y = ty;
+    trails.forEach((dot, i) => {
+      const speed = 0.35 - i * 0.03;
+      const prevX = parseFloat(dot.style.left) || x;
+      const prevY = parseFloat(dot.style.top) || y;
+      dot.style.left = prevX + (x - prevX) * speed + 'px';
+      dot.style.top = prevY + (y - prevY) * speed + 'px';
+      x = prevX + (x - prevX) * speed;
+      y = prevY + (y - prevY) * speed;
+    });
+    requestAnimationFrame(animateTrail);
+  }
+  animateTrail();
+})();
+
+// 平滑滚动
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>

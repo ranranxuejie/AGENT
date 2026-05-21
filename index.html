@@ -245,14 +245,11 @@ body {
 }
 
 .hero h1 .gradient-text {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent-light);
+  text-shadow: 0 0 20px rgba(124, 91, 245, 0.35), 0 0 60px rgba(124, 91, 245, 0.15);
 }
 
 .hero h1 .hero-title-accent {
-  filter: drop-shadow(0 0 14px rgba(124,91,245,0.22));
   animation: none;
 }
 
@@ -262,6 +259,17 @@ body {
   max-width: 620px;
   opacity: 0;
   animation: fadeInUp 0.8s ease forwards 0.6s;
+}
+
+.hero-downloads a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124, 91, 245, 0.2);
+  border-color: rgba(124, 91, 245, 0.5);
+}
+
+.hero-downloads a:nth-child(2):hover {
+  box-shadow: 0 8px 30px rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.5);
 }
 
 .hero-command-deck {
@@ -1836,6 +1844,16 @@ section .section-desc {
   <div class="hero-badge electric-pulse">AI-Powered Development</div>
   <h1><span class="glitch-text" data-text="Claude Code">Claude Code</span><br><span class="gradient-text hero-title-accent">经验分享</span></h1>
   <p class="hero-subtitle">从零开始配置 AI 编程助手，让 Claude 成为你的编码搭档</p>
+  <div class="hero-downloads" style="display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeInUp 0.8s ease forwards 0.75s;">
+    <a href="https://github.com/ranranxuejie/AGENT/raw/main/assets/setup/CC-Switch-v3.12.3-Windows.msi" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;background:linear-gradient(135deg,rgba(124,91,245,0.18),rgba(244,114,182,0.12));border:1px solid rgba(124,91,245,0.3);color:var(--text-primary);font-size:14px;font-weight:600;text-decoration:none;transition:all 0.3s ease;backdrop-filter:blur(20px);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      CC-Switch v3.12.3
+    </a>
+    <a href="https://github.com/ranranxuejie/AGENT/raw/main/assets/setup/node-v25.8.0-x64.msi" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;background:linear-gradient(135deg,rgba(56,189,248,0.18),rgba(52,211,153,0.12));border:1px solid rgba(56,189,248,0.3);color:var(--text-primary);font-size:14px;font-weight:600;text-decoration:none;transition:all 0.3s ease;backdrop-filter:blur(20px);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Node.js v25.8.0
+    </a>
+  </div>
   <div class="hero-command-deck holo-shimmer">
     <div class="command-topbar">
       <span></span><span></span><span></span>
@@ -2316,7 +2334,28 @@ section .section-desc {
       </a>
     </div>
   </div>
-  
+
+  <!-- Vibe Coding 使用技巧 — 新增 -->
+  <div class="fade-in" style="margin-top: 24px;">
+    <div class="card neon-border scan-beam" style="display: flex; align-items: center; gap: 28px; padding: 32px;">
+      <div class="card-icon amber" style="flex-shrink: 0; width: 56px; height: 56px; font-size: 26px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div style="flex: 1;">
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">
+          Vibe Coding 工具使用技巧
+          <span style="font-size: 11px; color: var(--accent-amber); font-weight: 500; margin-left: 8px; background: rgba(251,191,36,0.12); padding: 2px 8px; border-radius: 100px;">全面攻略</span>
+        </h3>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+          从 /斜杠命令、@文件引用、键盘快捷键到 MCP 服务、Hooks 自动化——掌握 Claude Code 的全部命令与高级技巧，让你的 Vibe Coding 体验如丝般顺滑。
+        </p>
+        <a href="vibe-coding.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; font-size: 13px; font-weight: 600; color: var(--accent-amber); text-decoration: none; border: 1px solid rgba(251,191,36,0.2); background: rgba(251,191,36,0.05); border-radius: 100px; transition: all 0.3s ease;">
+          查看完整攻略 <span style="font-size: 16px;">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div class="section-nav"><a href="#hero" class="section-nav-next">回到顶部 <span class="arrow">&uarr;</span></a></div>
 </section>
 
@@ -2326,7 +2365,7 @@ section .section-desc {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
     回到顶部
   </a>
-  <p style="margin-top:32px;">深入学习：<a href="api-intro.html">什么是 API</a> · <a href="claude-code-intro.html">什么是 Claude Code</a> · <a href="paper-to-tex.html">实战：论文转 LaTeX</a></p>
+  <p style="margin-top:32px;">深入学习：<a href="api-intro.html">什么是 API</a> · <a href="claude-code-intro.html">什么是 Claude Code</a> · <a href="vibe-coding.html">Vibe Coding 技巧</a> · <a href="paper-to-tex.html">实战：论文转 LaTeX</a></p>
   <p style="margin-top:12px;">遇到问题？前往 <a href="https://github.com/anthropics/claude-code/issues" target="_blank">Claude Code GitHub</a> 提交反馈</p>
   <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Made with Claude Code</p>
 </div>
