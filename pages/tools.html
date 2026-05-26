@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外部工具 — CC-Connect &amp; CC-Switch</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+
+.hero-badge {
+  color: var(--accent-amber);
+  animation: fadeInUp 0.8s ease forwards 0.2s, badge-electric-amber 4s ease-in-out infinite 1s;
+}
+.hero-badge::before { background: var(--accent-amber); }
+@keyframes badge-electric-amber {
+  0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0);border-color:rgba(251,191,36,0.2);}
+  50%{box-shadow:0 0 20px rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.5);}
+}
+.top-nav .nav-brand .accent { color: var(--accent-amber); }
+
+/* ===== 工具详情卡 ===== */
+.tool-detail {
+  background: var(--surface-card); border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg); padding: 40px; margin-bottom: 40px;
+  backdrop-filter: blur(20px); position: relative; overflow: hidden;
+  transition: all 0.4s ease;
+}
+.tool-detail:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.tool-detail::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg);
+  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(124,91,245,0.05), transparent 40%);
+  pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
+}
+.tool-detail:hover::after { opacity: 1; }
+
+.tool-header {
+  display: flex; align-items: center; gap: 20px; margin-bottom: 28px;
+}
+.tool-icon {
+  width: 64px; height: 64px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.tool-icon.amber { background: rgba(251,191,36,0.12); color: var(--accent-amber); }
+.tool-icon.purple { background: rgba(124,91,245,0.12); color: var(--accent-light); }
+.tool-header-text h2 {
+  font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px;
+}
+.tool-header-text .tool-tagline {
+  font-size: 14px; color: var(--text-muted);
+}
+.tool-desc {
+  font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 28px;
+  max-width: 700px;
+}
+
+/* 功能网格 */
+.feature-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;
+}
+@media (max-width: 640px) { .feature-grid { grid-template-columns: 1fr; } }
+.feature-item {
+  display: flex; align-items: flex-start; gap: 12px; padding: 16px;
+  background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm); transition: all 0.3s ease;
+}
+.feature-item:hover {
+  border-color: var(--border-hover); background: rgba(255,255,255,0.04);
+}
+.feature-item .fi-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.feature-item .fi-icon.amber { background: rgba(251,191,36,0.1); color: var(--accent-amber); }
+.feature-item .fi-icon.purple { background: rgba(124,91,245,0.1); color: var(--accent-light); }
+.feature-item .fi-icon.blue { background: rgba(56,189,248,0.1); color: var(--accent-tertiary); }
+.feature-item .fi-icon.green { background: rgba(52,211,153,0.1); color: var(--accent-green); }
+.feature-item .fi-icon.pink { background: rgba(244,114,182,0.1); color: var(--accent-secondary); }
+.fi-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.fi-text p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* 支持平台标签 */
+.platform-tags {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px;
+}
+.platform-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  border: 1px solid; transition: all 0.25s ease;
+}
+.platform-tag.agent {
+  background: rgba(124,91,245,0.08); border-color: rgba(124,91,245,0.15); color: var(--accent-light);
+}
+.platform-tag.msg {
+  background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.15); color: var(--accent-tertiary);
+}
+.platform-tag.config {
+  background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.15); color: var(--accent-green);
+}
+.platform-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.platform-tag.agent::before { background: var(--accent-light); }
+.platform-tag.msg::before { background: var(--accent-tertiary); }
+.platform-tag.config::before { background: var(--accent-green); }
+
+/* 安装命令 */
+.install-block {
+  display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+  background: #0d0d14; border: 1px solid var(--border-default); border-radius: var(--radius-sm);
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px; color: var(--accent-light);
+  margin-bottom: 20px;
+}
+.install-block .label {
+  font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.install-block code { flex: 1; }
+
+/* CTA 按钮 */
+.tool-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border-radius: 100px; font-size: 14px; font-weight: 700;
+  text-decoration: none; transition: all 0.3s ease; border: 1px solid;
+}
+.tool-cta.amber {
+  background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.25);
+  color: var(--accent-amber);
+}
+.tool-cta.amber:hover {
+  background: rgba(251,191,36,0.18); border-color: rgba(251,191,36,0.45);
+  transform: translateY(-2px); box-shadow: 0 8px 24px rgba(251,191,36,0.12);
+}
+.tool-cta.purple {
+  background: rgba(124,91,245,0.1); border-color: rgba(124,91,245,0.25);
+  color: var(--accent-light);
+}
+.tool-cta.purple:hover {
+  background: rgba(124,91,245,0.18); border-color: rgba(124,91,245,0.45);
+  transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,91,245,0.12);
+}
+
+/* 架构图 */
+.arch-diagram {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  margin: 32px 0; flex-wrap: wrap;
+}
+.arch-node {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 20px 16px; min-width: 110px;
+  background: var(--surface-card); border: 1px solid var(--border-default);
+  border-radius: var(--radius-md); transition: all 0.3s ease;
+}
+.arch-node:hover {
+  border-color: var(--border-hover); transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(124,91,245,0.08);
+}
+.arch-node .icon { font-size: 28px; }
+.arch-node .label { font-size: 12px; font-weight: 600; color: var(--text-primary); text-align: center; }
+.arch-node .sub { font-size: 10.5px; color: var(--text-muted); text-align: center; }
+.arch-arrow {
+  font-size: 20px; color: var(--accent); padding: 0 6px;
+  animation: arrow-pulse 2s ease-in-out infinite;
+}
+@media (max-width: 700px) {
+  .arch-diagram { flex-direction: column; }
+  .arch-arrow { transform: rotate(90deg); }
+}
+
+</style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="top-nav" id="topNav">
+  <span class="nav-brand">CC <span class="accent">Tools</span></span>
+  <a href="#connect"><span class="num">01</span>CC-Connect</a>
+  <a href="#switch"><span class="num">02</span>CC-Switch</a>
+</nav>
+
+<!-- 全局背景 -->
+<div class="global-bg">
+  <div class="signal-field"></div>
+  <div class="orb"></div>
+  <div class="cyber-tunnel"></div>
+</div>
+<div class="grid-bg"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="crt-overlay"></div>
+<div class="scroll-scanline" id="scrollScanline"></div>
+
+<!-- 侧边导航 -->
+<nav class="toc" id="toc">
+  <a href="#connect" data-section="connect"><span class="dot"></span><span class="num">01</span><span class="label">CC-Connect</span></a>
+  <a href="#switch" data-section="switch"><span class="dot"></span><span class="num">02</span><span class="label">CC-Switch</span></a>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero" style="min-height:70vh;">
+  <div class="hero-badge electric-pulse">External Tools</div>
+  <h1><span class="glitch-text" data-text="外部工具">外部工具</span><br><span class="gradient-text neon-text">生态扩展</span></h1>
+  <p class="hero-subtitle">让 Claude Code 连接更广阔的世界——从消息平台到可视化配置，解锁 AI 编程的更多可能。</p>
+  <div class="scroll-indicator">
+    <div class="mouse"></div>
+    <span style="font-size:11px;color:var(--text-muted);letter-spacing:2px;">SCROLL</span>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- 1. CC-Connect -->
+<section id="connect">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 01</div>
+    <h2><span class="glitch-text" data-text="CC-Connect">CC-Connect</span></h2>
+    <p class="section-desc">把本地 AI 编程助手桥接到消息平台，随时随地与你的 AI 搭档对话。</p>
+  </div>
+
+  <div class="tool-detail fade-in holo-shimmer">
+    <div class="tool-header">
+      <div class="tool-icon amber">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <div class="tool-header-text">
+        <h2>CC-Connect</h2>
+        <span class="tool-tagline">AI Coding Agent &harr; 消息平台桥梁</span>
+      </div>
+    </div>
+
+    <p class="tool-desc">
+      CC-Connect 是一个开源桥接工具，将本地运行的 AI 编程助手（Claude Code、Cursor、Gemini CLI、Codex 等）连接到你常用的即时通讯平台。无需公网 IP，直接在飞书、钉钉、Slack、Telegram 中与 AI 搭档实时对话，远程下达编程指令。
+    </p>
+
+    <!-- 架构图 -->
+    <div class="arch-diagram fade-in">
+      <div class="arch-node">
+        <span class="icon">🤖</span>
+        <span class="label">Claude Code</span>
+        <span class="sub">本地终端</span>
+      </div>
+      <span class="arch-arrow">&harr;</span>
+      <div class="arch-node" style="border-color:rgba(251,191,36,0.3);box-shadow:0 0 20px rgba(251,191,36,0.08);">
+        <span class="icon">⚡</span>
+        <span class="label" style="color:var(--accent-amber);">CC-Connect</span>
+        <span class="sub">桥接层</span>
+      </div>
+      <span class="arch-arrow">&harr;</span>
+      <div class="arch-node">
+        <span class="icon">💬</span>
+        <span class="label">消息平台</span>
+        <span class="sub">飞书 / 钉钉 / Slack ...</span>
+      </div>
+    </div>
+
+    <!-- 支持平台 -->
+    <div class="fade-in" style="margin-bottom:20px;">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">支持的 AI Agent</h3>
+      <div class="platform-tags">
+        <span class="platform-tag agent">Claude Code</span>
+        <span class="platform-tag agent">Cursor</span>
+        <span class="platform-tag agent">Gemini CLI</span>
+        <span class="platform-tag agent">Codex</span>
+      </div>
+    </div>
+    <div class="fade-in" style="margin-bottom:28px;">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">支持的消息平台</h3>
+      <div class="platform-tags">
+        <span class="platform-tag msg">飞书 / Lark</span>
+        <span class="platform-tag msg">钉钉</span>
+        <span class="platform-tag msg">Slack</span>
+        <span class="platform-tag msg">Telegram</span>
+        <span class="platform-tag msg">Discord</span>
+        <span class="platform-tag msg">LINE</span>
+        <span class="platform-tag msg">企业微信</span>
+      </div>
+    </div>
+
+    <!-- 核心功能 -->
+    <div class="fade-in">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">核心能力</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="fi-icon amber">🌐</div>
+          <div class="fi-text">
+            <h4>无需公网 IP</h4>
+            <p>大多数平台支持内网穿透，本地即可运行</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon purple">🔄</div>
+          <div class="fi-text">
+            <h4>实时双向对话</h4>
+            <p>消息平台发送指令，终端实时执行并返回结果</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon blue">🔌</div>
+          <div class="fi-text">
+            <h4>多 Agent 支持</h4>
+            <p>一套桥接同时连接 Claude Code、Cursor 等多个工具</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon green">📦</div>
+          <div class="fi-text">
+            <h4>npm 一键安装</h4>
+            <p>Node.js 环境下一行命令即可启动</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 安装 -->
+    <div class="install-block fade-in">
+      <span class="label">Terminal</span>
+      <code>npm install -g cc-connect</code>
+    </div>
+
+    <div class="fade-in">
+      <a href="https://github.com/chenhg5/cc-connect" target="_blank" class="tool-cta amber">
+        查看 GitHub
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="section-nav"><a href="#switch" class="section-nav-next">CC-Switch <span class="arrow">&rarr;</span></a></div>
+</section>
+
+<!-- 2. CC-Switch -->
+<section id="switch">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> SECTION 02</div>
+    <h2><span class="glitch-text" data-text="CC-Switch">CC-Switch</span></h2>
+    <p class="section-desc">可视化管理 Claude Code 模型配置，告别手动编辑配置文件。</p>
+  </div>
+
+  <div class="tool-detail fade-in holo-shimmer">
+    <div class="tool-header">
+      <div class="tool-icon purple">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div class="tool-header-text">
+        <h2>CC-Switch</h2>
+        <span class="tool-tagline">Claude Code 模型配置管理器</span>
+      </div>
+    </div>
+
+    <p class="tool-desc">
+      CC-Switch 是一个桌面端可视化工具，让你无需手动编辑 JSON 配置文件，通过图形界面即可管理 Claude Code 的模型设置。一键切换 DeepSeek、MiMo 等不同平台的模型，支持多配置方案快速切换。
+    </p>
+
+    <!-- 核心功能 -->
+    <div class="fade-in">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">核心能力</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="fi-icon purple">🖥️</div>
+          <div class="fi-text">
+            <h4>图形化配置</h4>
+            <p>告别手写 JSON，可视化编辑 Base URL、模型等参数</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon green">⚡</div>
+          <div class="fi-text">
+            <h4>一键切换模型</h4>
+            <p>在 DeepSeek、MiMo 等多个配置方案间瞬间切换</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon blue">🔍</div>
+          <div class="fi-text">
+            <h4>连通性测试</h4>
+            <p>内置测试按钮，配置完成后立即验证 API 是否可用</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon pink">📋</div>
+          <div class="fi-text">
+            <h4>多配置管理</h4>
+            <p>同时保存多套配置，工作/学习/个人场景灵活切换</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 支持平台 -->
+    <div class="fade-in" style="margin-bottom:28px;">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">支持的模型平台</h3>
+      <div class="platform-tags">
+        <span class="platform-tag config">DeepSeek</span>
+        <span class="platform-tag config">Xiaomi MiMo</span>
+        <span class="platform-tag config">Anthropic (官方)</span>
+        <span class="platform-tag config">更多兼容平台</span>
+      </div>
+    </div>
+
+    <!-- 安装 -->
+    <div class="install-block fade-in">
+      <span class="label">Download</span>
+      <code>前往 ccswitch.ai 下载安装包</code>
+    </div>
+
+    <div class="fade-in" style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="https://ccswitch.ai/zh/" target="_blank" class="tool-cta purple">
+        访问官网
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+      <a href="guide.html" class="tool-cta" style="background:rgba(255,255,255,0.04);border-color:var(--border-default);color:var(--text-secondary);">
+        查看配置教程 &rarr;
+      </a>
+    </div>
+  </div>
+
+  <div class="section-nav"><a href="#hero" class="section-nav-next">回到顶部 <span class="arrow">&uarr;</span></a></div>
+</section>
+
+</div><!-- .container -->
+
+<!-- Footer -->
+<div class="footer fade-in">
+  <a href="#hero" class="back-to-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    回到顶部
+  </a>
+  <p style="margin-top:32px;">更多模块：<a href="../index.html">首页</a> · <a href="api-intro.html">什么是 API</a> · <a href="claude-code-intro.html">什么是 Claude Code</a> · <a href="guide.html">快速开始</a> · <a href="vibe-coding.html">Vibe Coding 技巧</a></p>
+  <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Made with Claude Code</p>
+  <p style="margin-top:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.5px;">Author: <span style="color:var(--accent-light);">Ranran</span> @ Tongji University</p>
+</div>
+
+<script src="../js/common.js"></script>
+<script>
+// 截图悬浮放大
+document.querySelectorAll('.screenshot-wrap').forEach(wrap => {
+  wrap.addEventListener('mousemove', e => {
+    const rect = wrap.getBoundingClientRect();
+    wrap.style.setProperty('--mx', `${(e.clientX-rect.left)/rect.width*100}%`);
+    wrap.style.setProperty('--my', `${(e.clientY-rect.top)/rect.height*100}%`);
+  });
+});
+</script>
+</body>
+</html>

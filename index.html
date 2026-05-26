@@ -1,196 +1,229 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code 经验分享</title>
+<title>CC Guide — Claude Code 知识库</title>
 <link rel="stylesheet" href="css/common.css">
 <style>
 
-/* ===== Hero 特殊样式 ===== */
-.hero h1 .gradient-text {
-  color: var(--accent-light);
-  text-shadow: 0 0 7px var(--accent-glow), 0 0 20px var(--accent-glow), 0 0 42px rgba(124, 91, 245, 0.15);
-  animation: neon-breathe 3s ease-in-out infinite;
+/* ===== Index Hero ===== */
+.index-hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  position: relative; padding: 80px 24px 60px;
 }
-.hero-downloads a:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(124, 91, 245, 0.2);
-  border-color: rgba(124, 91, 245, 0.5);
+.index-hero .hero-badge { margin-bottom: 32px; }
+.index-hero h1 {
+  font-size: clamp(56px, 10vw, 96px); font-weight: 900;
+  line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 20px;
+  opacity: 0; animation: fadeInUp 0.8s ease forwards 0.3s;
 }
-.hero-downloads a:nth-child(2):hover {
-  box-shadow: 0 8px 30px rgba(56, 189, 248, 0.2);
-  border-color: rgba(56, 189, 248, 0.5);
-}
-.hero-command-deck {
-  width: min(680px, 100%); margin-top: 34px; padding: 14px;
-  border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius);
-  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)), rgba(10, 10, 15, 0.72);
-  box-shadow: 0 24px 90px rgba(0,0,0,0.38), 0 0 42px rgba(124,91,245,0.12), inset 0 1px 0 rgba(255,255,255,0.08);
-  backdrop-filter: blur(24px) saturate(1.35);
-  opacity: 0; transform: translateY(18px);
-  animation: fadeInUp 0.8s ease forwards 0.9s;
-}
-.hero-command-deck > * { position: relative; z-index: 2; }
-.command-topbar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 2px 2px 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.command-topbar span {
-  width: 9px; height: 9px; border-radius: 50%;
-  background: var(--accent-secondary); box-shadow: 0 0 12px rgba(244,114,182,0.36);
-}
-.command-topbar span:nth-child(2) { background: var(--accent-amber); box-shadow: 0 0 12px rgba(251,191,36,0.3); }
-.command-topbar span:nth-child(3) { background: var(--accent-green); box-shadow: 0 0 12px rgba(52,211,153,0.3); }
-.command-label {
-  margin-left: auto; font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; color: var(--text-muted); letter-spacing: 0;
-}
-.command-lines { display: grid; gap: 10px; padding: 14px 4px 2px; text-align: left; }
-.command-line {
-  display: flex; align-items: center; gap: 10px;
-  font-family: 'JetBrains Mono', monospace; font-size: clamp(11px, 2vw, 13px);
-  color: var(--text-secondary); white-space: nowrap; overflow: hidden;
-}
-.command-line::before {
-  content: '>'; color: var(--accent-tertiary);
-  text-shadow: 0 0 12px rgba(56,189,248,0.45);
-}
-.command-line strong { color: var(--text-primary); font-weight: 600; }
-.command-line .ok { color: var(--accent-green); }
-.command-line .warn { color: var(--accent-amber); }
-.animated-line {
-  position: absolute; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
-  animation: line-sweep 4s ease-in-out infinite;
-}
-@keyframes line-sweep {
-  0% { transform: translateX(-100%); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateX(200%); opacity: 0; }
-}
-.tab-group {
-  display: flex; gap: 4px; background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  padding: 4px; margin: 16px 0; width: fit-content;
-}
-.tab-btn {
-  padding: 8px 20px; border: none; background: transparent;
-  color: var(--text-muted); font-family: 'Inter', sans-serif;
-  font-size: 13px; font-weight: 500; border-radius: 8px;
-  cursor: pointer; transition: all 0.3s ease;
-}
-.tab-btn:hover { color: var(--text-secondary); }
-.tab-btn.active {
-  background: var(--accent); color: white;
-  box-shadow: 0 2px 12px var(--accent-glow);
-}
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeInUp 0.5s ease; }
-@keyframes stamp {
-  0% { transform: scale(3) rotate(-15deg); opacity: 0; }
-  60% { transform: scale(1) rotate(0deg); opacity: 1; }
-  80% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-.typewriter {
-  overflow: hidden; white-space: nowrap;
-  border-right: 2px solid var(--accent);
-  animation: typing 2s steps(30) forwards, blink-caret 0.75s step-end infinite;
-  width: 0; display: inline-block;
-}
-.typewriter.active { width: auto; }
-@keyframes typing { from { width: 0; } to { width: 100%; } }
-@keyframes blink-caret { from, to { border-color: transparent; } 50% { border-color: var(--accent); } }
-.screenshot-wrap {
-  margin: 24px 0;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  transition: all 0.4s ease;
-  position: relative;
-}
-.screenshot-wrap::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius);
-  box-shadow: inset 0 0 60px rgba(0,0,0,0.3);
-  pointer-events: none;
-}
-.screenshot-wrap img {
-  width: 100%;
+.index-hero h1 .line-brand {
   display: block;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(135deg, var(--color-purple-400) 0%, var(--color-pink-400) 40%, var(--color-blue-400) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-.screenshot-wrap:hover img {
-  transform: scale(1.03);
+.index-hero h1 .line-title {
+  display: block; font-size: 0.42em; font-weight: 600;
+  color: var(--text-secondary); letter-spacing: 0.08em;
+  -webkit-text-fill-color: var(--text-secondary);
 }
-.screenshot-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius);
-  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(124,91,245,0.1), transparent 40%);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.screenshot-wrap:hover::before { opacity: 1; }
-.screenshot-wrap:hover::after {
-  box-shadow:
-    inset 0 0 60px rgba(0,0,0,0.3),
-    inset 0 0 30px rgba(124, 91, 245, 0.08);
-}
-.screenshot-caption {
-  padding: 10px 16px;
-  font-size: 12px;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border);
-  background: rgba(255,255,255,0.015);
-}
-@media (max-width: 640px) {
-  .hero-command-deck { margin-top: 28px; padding: 12px; border-radius: var(--radius-sm); }
-  .command-line { white-space: normal; }
+.index-hero .hero-subtitle {
+  font-size: 17px; color: var(--text-tertiary); max-width: 480px; line-height: 1.7;
+  opacity: 0; animation: fadeInUp 0.8s ease forwards 0.5s;
 }
 
-/* ===== 复制按钮 ===== */
-.copy-btn-icon {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 10px; border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 5px; background: rgba(255,255,255,0.04);
-  color: var(--text-muted); font-size: 12px; font-family: 'Inter', sans-serif;
-  cursor: pointer; transition: all 0.25s ease; opacity: 0.5;
-  flex-shrink: 0;
+/* ===== 终端加载动画 ===== */
+.terminal-loader {
+  width: min(560px, 92vw); margin-top: 44px; padding: 16px;
+  border: 1px solid rgba(255,255,255,0.06); border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)), rgba(8,8,14,0.85);
+  box-shadow: 0 32px 100px rgba(0,0,0,0.45), 0 0 60px rgba(124,91,245,0.08);
+  backdrop-filter: blur(28px) saturate(1.4);
+  text-align: left;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards 0.7s;
 }
-.code-header:hover .copy-btn-icon { opacity: 1; }
-.copy-btn-icon:hover {
-  background: rgba(124,91,245,0.12); border-color: rgba(124,91,245,0.25);
-  color: var(--accent-light); opacity: 1;
+.terminal-topbar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 4px 14px; border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.copy-btn-icon.copied {
-  background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.25);
-  color: var(--accent-green); opacity: 1;
+.terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+.terminal-dot.r { background: #ff5f56; box-shadow: 0 0 8px rgba(255,95,86,0.3); }
+.terminal-dot.y { background: #ffbd2e; box-shadow: 0 0 8px rgba(255,189,46,0.3); }
+.terminal-dot.g { background: #27c93f; box-shadow: 0 0 8px rgba(39,201,63,0.3); }
+.terminal-label {
+  margin-left: auto; font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px; color: var(--text-tertiary); letter-spacing: 0.5px;
 }
+.terminal-body {
+  padding: 16px 8px 4px; font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(11px, 1.8vw, 13px); line-height: 2;
+}
+.terminal-line {
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transform: translateX(-8px);
+  white-space: nowrap; overflow: hidden;
+}
+.terminal-line .prompt { color: var(--color-tertiary); text-shadow: 0 0 10px rgba(56,189,248,0.3); flex-shrink: 0; }
+.terminal-line .cmd { color: var(--text-primary); font-weight: 600; }
+.terminal-line .ok { color: var(--color-green-400); }
+.terminal-line .info { color: var(--text-tertiary); }
+.terminal-line .accent { color: var(--color-purple-400); }
+.terminal-line.reveal {
+  animation: termReveal 0.35s ease forwards;
+}
+@keyframes termReveal {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== 快速入口 ===== */
+.quick-start {
+  margin-top: 40px;
+  opacity: 0; animation: fadeInUp 0.8s ease forwards 0.9s;
+}
+.quick-start-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 36px; border-radius: 100px;
+  background: linear-gradient(135deg, rgba(124,91,245,0.2), rgba(244,114,182,0.12));
+  border: 1px solid rgba(124,91,245,0.35);
+  color: var(--text-primary); font-size: 15px; font-weight: 700;
+  text-decoration: none; letter-spacing: 0.02em;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  backdrop-filter: blur(20px); position: relative; overflow: hidden;
+}
+.quick-start-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(124,91,245,0.15), rgba(244,114,182,0.1));
+  opacity: 0; transition: opacity 0.35s ease;
+}
+.quick-start-btn:hover::before { opacity: 1; }
+.quick-start-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(124,91,245,0.25), 0 0 60px rgba(124,91,245,0.08);
+  border-color: rgba(124,91,245,0.5);
+}
+.quick-start-btn .arrow {
+  transition: transform 0.3s ease; font-size: 18px;
+}
+.quick-start-btn:hover .arrow { transform: translateX(4px); }
+
+/* ===== 模块区 ===== */
+.modules-section {
+  position: relative; z-index: 1;
+  max-width: 1000px; margin: 0 auto; padding: 0 24px 80px;
+}
+.modules-header {
+  text-align: center; margin-bottom: 48px;
+}
+.modules-header .section-label { justify-content: center; margin-bottom: 12px; }
+.modules-header h2 {
+  font-size: clamp(28px, 4vw, 38px); font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.modules-header h2 .accent { color: var(--color-purple-400); }
+.modules-header p {
+  font-size: 15px; color: var(--text-tertiary); margin-top: 8px;
+}
+
+/* ===== 模块卡片 ===== */
+.module-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  margin-bottom: 24px;
+}
+@media (max-width: 768px) { .module-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .module-grid { grid-template-columns: 1fr; } }
+
+.module-card {
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: var(--surface-card); border: 1px solid var(--border-default);
+  border-radius: var(--radius-md); padding: 28px 24px;
+  backdrop-filter: blur(20px); position: relative; overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  text-decoration: none; color: inherit;
+  transform-style: preserve-3d; will-change: transform;
+}
+.module-card::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius-md);
+  background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 50%), rgba(124,91,245,0.07), transparent 40%);
+  pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
+}
+.module-card:hover::after { opacity: 1; }
+.module-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); padding: 1px;
+  background: linear-gradient(135deg, rgba(124,91,245,0), rgba(124,91,245,0.3), rgba(244,114,182,0));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+}
+.module-card:hover::before { opacity: 1; }
+.module-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 64px rgba(124,91,245,0.1);
+  border-color: rgba(124,91,245,0.3);
+}
+.module-card:active { transform: translateY(-2px); }
+
+.module-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.module-icon.purple { background: rgba(124,91,245,0.12); color: var(--color-purple-400); }
+.module-icon.blue { background: rgba(56,189,248,0.12); color: var(--color-blue-400); }
+.module-icon.green { background: rgba(52,211,153,0.12); color: var(--color-green-400); }
+.module-icon.pink { background: rgba(244,114,182,0.12); color: var(--color-pink-400); }
+.module-icon.amber { background: rgba(251,191,36,0.12); color: var(--color-amber-400); }
+
+.module-card h3 {
+  font-size: 17px; font-weight: 700; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.module-card .tag {
+  font-size: 10px; padding: 2px 8px;
+}
+.module-card .desc {
+  font-size: 13.5px; color: var(--text-tertiary); line-height: 1.65;
+  margin-bottom: 20px;
+}
+.module-card .cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; margin-top: auto;
+  transition: gap 0.3s ease;
+}
+.module-card:hover .cta { gap: 10px; }
+
+/* 卡片色彩主题 */
+.module-card.theme-purple .cta { color: var(--color-purple-400); }
+.module-card.theme-blue .cta { color: var(--color-blue-400); }
+.module-card.theme-green .cta { color: var(--color-green-400); }
+.module-card.theme-pink .cta { color: var(--color-pink-400); }
+.module-card.theme-amber .cta { color: var(--color-amber-400); }
+
+/* ===== Footer ===== */
+.index-footer {
+  text-align: center; padding: 60px 24px 48px;
+  border-top: 1px solid var(--border-default);
+  position: relative; z-index: 1;
+}
+.index-footer::before {
+  content: ''; display: block; width: 160px; height: 2px; margin: 0 auto 28px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-secondary), transparent);
+  animation: footer-line-glow 3s ease-in-out infinite;
+}
+.index-footer p { font-size: 13px; color: var(--text-tertiary); line-height: 2; }
+.index-footer a {
+  color: var(--color-purple-400); text-decoration: none;
+  border-bottom: 1px solid rgba(124,91,245,0.2);
+  transition: border-color 0.2s ease;
+}
+.index-footer a:hover { border-color: var(--color-primary); }
 
 </style>
 </head>
 <body>
-
-<!-- 顶部导航栏 -->
-<nav class="top-nav" id="topNav">
-  <span class="nav-brand">CC <span class="accent">Guide</span></span>
-  <a href="#api-key"><span class="num">01</span>API Key</a>
-  <a href="#install"><span class="num">02</span>安装</a>
-  <a href="#config"><span class="num">03</span>配置</a>
-  <a href="#verify"><span class="num">04</span>验证</a>
-  <a href="#vscode"><span class="num">05</span>VS Code</a>
-  <a href="#skills"><span class="num">06</span>Skills</a>
-  <a href="#tips"><span class="num">07</span>技巧</a>
-  <a href="#explore" style="color:var(--accent-light);"><span class="num">08</span>探索知识库</a>
-</nav>
 
 <!-- 全局背景 -->
 <div class="global-bg">
@@ -203,633 +236,207 @@
 <div class="crt-overlay"></div>
 <div class="scroll-scanline" id="scrollScanline"></div>
 
-<!-- 侧边导航 -->
-<nav class="toc" id="toc">
-  <a href="#api-key" data-section="api-key"><span class="dot"></span><span class="num">01</span><span class="label">API Key</span></a>
-  <a href="#install" data-section="install"><span class="dot"></span><span class="num">02</span><span class="label">安装</span></a>
-  <a href="#config" data-section="config"><span class="dot"></span><span class="num">03</span><span class="label">配置</span></a>
-  <a href="#verify" data-section="verify"><span class="dot"></span><span class="num">04</span><span class="label">验证</span></a>
-  <a href="#vscode" data-section="vscode"><span class="dot"></span><span class="num">05</span><span class="label">VS Code</span></a>
-  <a href="#skills" data-section="skills"><span class="dot"></span><span class="num">06</span><span class="label">Skills</span></a>
-  <a href="#tips" data-section="tips"><span class="dot"></span><span class="num">07</span><span class="label">技巧</span></a>
-  <a href="#explore" data-section="explore" style="border-top:1px solid var(--border);padding-top:12px;margin-top:6px;"><span class="dot" style="background:var(--accent-light);"></span><span class="num" style="color:var(--accent-light);">08</span><span class="label">探索知识库</span></a>
-</nav>
-
 <!-- Hero -->
-<section class="hero" id="hero">
+<section class="index-hero" id="hero">
   <div class="hero-badge electric-pulse">AI-Powered Development</div>
-  <h1><span class="glitch-text" data-text="Claude Code">Claude Code</span><br><span class="gradient-text hero-title-accent neon-text">经验分享</span></h1>
-  <p class="hero-subtitle">从零开始配置 AI 编程助手，让 Claude 成为你的编码搭档</p>
-  <div class="hero-downloads" style="display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeInUp 0.8s ease forwards 0.75s;">
-    <a href="https://github.com/ranranxuejie/AGENT/raw/main/assets/setup/CC-Switch-v3.12.3-Windows.msi" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;background:linear-gradient(135deg,rgba(124,91,245,0.18),rgba(244,114,182,0.12));border:1px solid rgba(124,91,245,0.3);color:var(--text-primary);font-size:14px;font-weight:600;text-decoration:none;transition:all 0.3s ease;backdrop-filter:blur(20px);">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      CC-Switch v3.12.3
+  <h1>
+    <span class="line-brand glitch-text" data-text="CC Guide">CC Guide</span>
+    <span class="line-title">CLAUDE CODE 知识库</span>
+  </h1>
+  <p class="hero-subtitle">从零到一的 AI 编程助手学习路径。安装配置、核心概念、实战技巧，一站通关。</p>
+
+  <!-- 终端加载动画 -->
+  <div class="terminal-loader holo-shimmer">
+    <div class="terminal-topbar">
+      <span class="terminal-dot r"></span>
+      <span class="terminal-dot y"></span>
+      <span class="terminal-dot g"></span>
+      <span class="terminal-label">CC GUIDE / MODULE LOADER</span>
+    </div>
+    <div class="terminal-body" id="termBody">
+      <div class="terminal-line" data-delay="300">
+        <span class="prompt">&gt;</span>
+        <span class="cmd">cc-guide --list-modules</span>
+      </div>
+      <div class="terminal-line" data-delay="700">
+        <span class="prompt">&gt;</span>
+        <span class="ok">loaded</span>
+        <span class="info">api-intro</span>
+        <span class="accent">what is API</span>
+      </div>
+      <div class="terminal-line" data-delay="1000">
+        <span class="prompt">&gt;</span>
+        <span class="ok">loaded</span>
+        <span class="info">claude-code-intro</span>
+        <span class="accent">what is CC</span>
+      </div>
+      <div class="terminal-line" data-delay="1300">
+        <span class="prompt">&gt;</span>
+        <span class="ok">loaded</span>
+        <span class="info">guide</span>
+        <span class="accent">quick start</span>
+      </div>
+      <div class="terminal-line" data-delay="1600">
+        <span class="prompt">&gt;</span>
+        <span class="ok">loaded</span>
+        <span class="info">vibe-coding</span>
+        <span class="accent">cc tips</span>
+      </div>
+      <div class="terminal-line" data-delay="1900">
+        <span class="prompt">&gt;</span>
+        <span class="ok">loaded</span>
+        <span class="info">paper-to-tex</span>
+        <span class="accent">实战演练</span>
+      </div>
+      <div class="terminal-line" data-delay="2300">
+        <span class="prompt">&gt;</span>
+        <span class="ok">ready</span>
+        <span class="info">6 modules online</span>
+        <span class="accent">vibe coding pipeline active</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 快速开始 -->
+  <div class="quick-start">
+    <a href="pages/guide.html" class="quick-start-btn pulse-ring">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      快速开始
+      <span class="arrow">&rarr;</span>
     </a>
-    <a href="https://nodejs.org/zh-cn" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;background:linear-gradient(135deg,rgba(56,189,248,0.18),rgba(52,211,153,0.12));border:1px solid rgba(56,189,248,0.3);color:var(--text-primary);font-size:14px;font-weight:600;text-decoration:none;transition:all 0.3s ease;backdrop-filter:blur(20px);">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      下载 Node.js
-    </a>
-  </div>
-  <div class="hero-command-deck holo-shimmer">
-    <div class="command-topbar">
-      <span></span><span></span><span></span>
-      <div class="command-label">CLAUDE CODE / LIVE SETUP</div>
-    </div>
-    <div class="command-lines">
-      <div class="command-line"><strong>claude</strong> init workspace --context-aware</div>
-      <div class="command-line"><span class="ok">connected</span> API key, model router, VS Code</div>
-      <div class="command-line"><span class="warn">ready</span> vibe coding pipeline online</div>
-    </div>
-  </div>
-  <div class="scroll-indicator">
-    <div class="mouse"></div>
-    <span style="font-size:11px;color:var(--text-muted);letter-spacing:2px;">SCROLL</span>
   </div>
 </section>
 
-<div class="container">
-
-<!-- 1. 获取 API Key -->
-<section id="api-key">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 01</div>
-    <h2><span class="glitch-text" data-text="获取">获取</span> <span class="accent">API Key</span></h2>
-    <p class="section-desc">Claude Code 本身免费，但需要一个兼容 Anthropic API 的 Key 来驱动。推荐以下两个平台。</p>
+<!-- 模块区 -->
+<div class="modules-section">
+  <div class="modules-header fade-in">
+    <div class="section-label"><span class="line"></span> KNOWLEDGE BASE</div>
+    <h2>选择你的<span class="accent"> 学习路径</span></h2>
+    <p>从概念到实战，逐步掌握 Claude Code</p>
   </div>
 
-  <div class="card-grid">
-    <div class="card fade-in neon-border scan-beam">
-      <div class="card-icon purple">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
-      </div>
-      <h3>DeepSeek <span style="font-size:12px;color:var(--accent-secondary);font-weight:500;">推荐</span></h3>
-      <p>性价比之王。首次使用充值 <strong style="color:var(--text-primary);">1 元</strong> 即可体验，适合预算有限的同学。</p>
-      <a href="https://platform.deepseek.com/usage" target="_blank" style="display:inline-flex;align-items:center;gap:4px;margin-top:12px;font-size:13px;color:var(--accent-light);text-decoration:none;">访问平台 <span style="font-size:16px;">&rarr;</span></a>
-    </div>
-    <div class="card fade-in neon-border scan-beam">
-      <div class="card-icon blue">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      </div>
-      <h3>Xiaomi MiMo <span style="font-size:12px;color:#34d399;font-weight:500;">免费</span></h3>
-      <p>提供免费 token，申请后等待 <strong style="color:var(--text-primary);">1-3 天</strong> 审核即可使用，零成本入门。</p>
-      <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="https://100t.xiaomimimo.com/" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--accent-light);text-decoration:none;">申请入口 <span style="font-size:16px;">&rarr;</span></a>
-        <a href="https://platform.xiaomimimo.com/console/plan-manage" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--accent-tertiary);text-decoration:none;">管理页面 / 获取 API <span style="font-size:16px;">&rarr;</span></a>
-      </div>
-    </div>
-  </div>
+  <div class="module-grid">
 
-  <div class="screenshot-wrap fade-in holo-shimmer">
-    <img src="assets/images/1778728860503.png" alt="DeepSeek API Key 管理页面">
-    <div class="screenshot-caption">DeepSeek API Key 管理页面 — 创建并复制你的 Key</div>
-  </div>
-  <div class="section-nav"><a href="#install" class="section-nav-next">安装 Claude Code <span class="arrow">&rarr;</span></a></div>
-</section>
-
-<!-- 2. 安装 Claude Code -->
-<section id="install">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 02</div>
-    <h2><span class="glitch-text" data-text="安装">安装</span> <span class="accent">Claude Code</span></h2>
-    <p class="section-desc">三步搞定安装，全程只需一条命令。</p>
-  </div>
-
-  <div class="steps">
-    <div class="step" data-step="1">
-      <div class="step-title">安装 Node.js</div>
-      <div class="step-content">Claude Code 依赖 Node.js 运行环境，请先前往官网下载并安装</div>
-      <div style="margin-top:14px;">
-        <a href="https://nodejs.org/zh-cn" target="_blank" class="copy-btn" style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:100px;background:linear-gradient(135deg,rgba(56,189,248,0.15),rgba(52,211,153,0.1));border:1px solid rgba(56,189,248,0.25);color:var(--text-primary);font-size:14px;font-weight:600;text-decoration:none;transition:all 0.3s ease;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          前往 Node.js 官网下载
-        </a>
-      </div>
-    </div>
-    <div class="step" data-step="2">
-      <div class="step-title">执行安装命令</div>
-      <div class="step-content">打开管理员终端（按 <code>Win + X</code> 选择 <strong>终端（管理员）</strong>），复制以下命令粘贴并回车</div>
-      <div class="code-block" style="position:relative;">
-        <div class="code-header">
-          <span class="code-dot red"></span>
-          <span class="code-dot yellow"></span>
-          <span class="code-dot green"></span>
-          <span class="code-lang">Terminal</span>
-          <button class="copy-btn-icon" onclick="copyCommand(this, 'npm install -g claude-code')" title="复制命令" style="margin-left:auto;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>复制</span>
-          </button>
-        </div>
-        <pre>npm install -g claude-code</pre>
-      </div>
-    </div>
-    <div class="step" data-step="3">
-      <div class="step-title">安装完成，暂不配置 API</div>
-      <div class="step-content">安装完成后先放着，我们通过下一步的 CC Switch 来管理模型配置</div>
-    </div>
-  </div>
-  <div class="section-nav"><a href="#config" class="section-nav-next">配置模型 <span class="arrow">&rarr;</span></a></div>
-</section>
-
-<!-- 3. 配置模型 -->
-<section id="config">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 03</div>
-    <h2><span class="glitch-text" data-text="配置模型">配置模型</span> <span class="accent">CC Switch</span></h2>
-    <p class="section-desc">CC Switch 是一个可视化管理 Claude Code 模型配置的工具，告别手动编辑配置文件。</p>
-  </div>
-
-  <div class="steps">
-    <div class="step" data-step="1">
-      <div class="step-title">下载安装 CC Switch</div>
-      <div class="step-content">
-        前往 <a href="https://ccswitch.ai/zh/" target="_blank" style="color:var(--accent-light);text-decoration:none;border-bottom:1px dashed var(--accent);">ccswitch.ai</a> 下载安装
-      </div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778728574666.png" alt="CC Switch 下载">
-      </div>
-    </div>
-    <div class="step" data-step="2">
-      <div class="step-title">新建配置</div>
-      <div class="step-content">点击右上角按钮新建一个模型配置</div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778728652930.png" alt="新建配置">
-      </div>
-    </div>
-    <div class="step" data-step="3">
-      <div class="step-title">填入平台信息</div>
-      <div class="step-content">根据你获取的 API 选择对应平台</div>
-    </div>
-  </div>
-
-  <!-- 标签页切换-->
-  <div class="fade-in">
-    <div class="tab-group">
-      <button class="tab-btn active" onclick="switchTab('xiaomi', this)">Xiaomi MiMo</button>
-      <button class="tab-btn" onclick="switchTab('deepseek', this)">DeepSeek</button>
-    </div>
-
-    <div class="tab-content active" id="tab-xiaomi">
-      <div class="config-table-wrap">
-        <div class="config-table-title">
-          <span class="icon">🟣</span> Xiaomi MiMo 配置
-        </div>
-        <table class="config-table">
-          <thead><tr><th>项目</th><th>值</th></tr></thead>
-          <tbody>
-            <tr><td>Base URL</td><td><code>https://token-plan-cn.xiaomimimo.com/anthropic</code></td></tr>
-            <tr><td>可用模型</td><td><code>mimo-v2.5-pro</code> <code>mimo-v2-pro</code> <code>mimo-v2.5</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778729050206.png" alt="MiMo 配置示例">
-        <div class="screenshot-caption">MiMo 配置界面 — 填入 Base URL 和选择模型</div>
-      </div>
-    </div>
-
-    <div class="tab-content" id="tab-deepseek">
-      <div class="config-table-wrap">
-        <div class="config-table-title">
-          <span class="icon">🔵</span> DeepSeek 配置
-        </div>
-        <table class="config-table">
-          <thead><tr><th>项目</th><th>值</th></tr></thead>
-          <tbody>
-            <tr><td>Base URL</td><td><code>https://api.deepseek.com/anthropic</code></td></tr>
-            <tr><td>可用模型</td><td><code>deepseek-v4-flash</code> <code>deepseek-v4-pro[1m]</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778729068357.png" alt="DeepSeek 配置示例">
-        <div class="screenshot-caption">DeepSeek 配置界面 — 填入 Base URL 和选择模型</div>
-      </div>
-    </div>
-  </div>
-  <div class="section-nav"><a href="#verify" class="section-nav-next">验证安装 <span class="arrow">&rarr;</span></a></div>
-</section>
-
-<!-- 4. 验证安装 -->
-<section id="verify">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 04</div>
-    <h2><span class="glitch-text" data-text="验证">验证</span> <span class="accent">安装</span></h2>
-    <p class="section-desc">配置完成后，确认一切正常工作。</p>
-  </div>
-
-  <div class="steps">
-    <div class="step" data-step="1">
-      <div class="step-title">测试模型连通性</div>
-      <div class="step-content">点击 CC Switch 中的测试按钮，确认 API 可用</div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778729114116.png" alt="测试模型按钮">
-      </div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778729147240.png" alt="测试成功">
-        <div class="screenshot-caption">看到这个画面说明 API 配置成功</div>
-      </div>
-    </div>
-    <div class="step" data-step="2">
-      <div class="step-title">打开终端验证</div>
-      <div class="step-content">按 <code>Win + R</code>，输入 <code>cmd</code> 回车</div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778729233579.png" alt="打开终端">
-      </div>
-    </div>
-    <div class="step" data-step="3">
-      <div class="step-title">启动 Claude Code</div>
-      <div class="step-content">输入 <code>claude</code> 或 <code>claude code</code>，选择 <strong>yes</strong></div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778729244698.png" alt="启动 Claude Code">
-        <div class="screenshot-caption">头像下方显示模型名称，即说明配置成功</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tip success fade-in">
-    <span class="tip-icon">✓</span>
-    <span>看到头像下方显示了你在 CC Switch 中配置的默认模型名称，就表示一切就绪！</span>
-  </div>
-  <div class="section-nav"><a href="#vscode" class="section-nav-next">VS Code 集成 <span class="arrow">&rarr;</span></a></div>
-</section>
-
-<!-- 5. VS Code 集成 -->
-<section id="vscode">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 05</div>
-    <h2><span class="glitch-text" data-text="VS Code">VS Code</span> <span class="accent">集成</span></h2>
-    <p class="section-desc">在你熟悉的编辑器中直接使用 Claude Code。</p>
-  </div>
-
-  <div class="steps">
-    <div class="step" data-step="1">
-      <div class="step-title">安装 VS Code</div>
-      <div class="step-content">前往 <a href="https://code.visualstudio.com/" target="_blank" style="color:var(--accent-light);text-decoration:none;border-bottom:1px dashed var(--accent);">VS Code 官网</a> 下载安装</div>
-      <div class="tip info fade-in">
-        <span class="tip-icon">i</span>
-        <span>小技巧：VS Code 内按 <code>Ctrl + Shift + +/-</code> 可以缩放界面</span>
-      </div>
-    </div>
-    <div class="step" data-step="2">
-      <div class="step-title">安装 Claude Code 扩展</div>
-      <div class="step-content">
-        点击左侧扩展图标（或 <code>Ctrl + Shift + X</code>），搜索 <code>Claude Code</code>（Anthropic 官方出品），点击安装
-      </div>
-      <div class="screenshot-wrap fade-in holo-shimmer">
-        <img src="assets/images/1778728079282.png" alt="VS Code 扩展面板">
-        <div class="screenshot-caption">扩展面板 — 搜索并安装 Claude Code</div>
-      </div>
-    </div>
-    <div class="step" data-step="3">
-      <div class="step-title">完成安装</div>
-      <div class="step-content">安装后侧边栏会出现 <strong>Claude Code for VS Code</strong> 面板</div>
-    </div>
-  </div>
-
-  <div class="tip info fade-in">
-    <span class="tip-icon">i</span>
-    <span>建议同时搜索 <code>Chinese</code> 安装中文语言包，安装后重启生效</span>
-  </div>
-  <div class="section-nav"><a href="#skills" class="section-nav-next">Skills 技能扩展 <span class="arrow">&rarr;</span></a></div>
-</section>
-
-<!-- 6. Skills 技能扩展 -->
-<section id="skills">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 06</div>
-    <h2><span class="glitch-text" data-text="Skills">Skills</span> <span class="accent">技能扩展</span></h2>
-    <p class="section-desc">Skills 是 Claude Code 的插件系统，赋予它搜索论文、处理 PDF、发送邮件等额外能力。</p>
-  </div>
-
-  <!-- Skill 构成 -->
-  <div class="fade-in" style="margin-bottom:40px;">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Skill 的构成</h3>
-    <p style="color:var(--text-secondary);font-size:15px;margin-bottom:16px;">一个 Skill 本质上是一个 Markdown 文件（<code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(124,91,245,0.1);padding:2px 8px;border-radius:4px;color:var(--accent-light);">.md</code>），包含三个核心要素：</p>
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon purple">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <h3>触发条件</h3>
-        <p>描述何时应该调用这个 Skill</p>
-      </div>
-      <div class="card">
-        <div class="card-icon pink">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        <h3>执行指令</h3>
-        <p>告诉 Claude 具体该怎么做</p>
-      </div>
-      <div class="card">
-        <div class="card-icon blue">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        </div>
-        <h3>工具依赖</h3>
-        <p>可能需要额外的 API 或 CLI 工具</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 安装 -->
-  <div class="fade-in" style="margin-bottom:40px;">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">安装 Skill</h3>
-    <div class="code-block">
-      <div class="code-header">
-        <span class="code-dot red"></span>
-        <span class="code-dot yellow"></span>
-        <span class="code-dot green"></span>
-        <span class="code-lang">Claude Code Terminal</span>
-      </div>
-      <pre>/install-skill &lt;skill名称&gt;</pre>
-    </div>
-    <p style="color:var(--text-secondary);font-size:14px;">或者通过 Skill 商店搜索并安装可用的 Skills。</p>
-  </div>
-
-  <!-- 使用 -->
-  <div class="fade-in" style="margin-bottom:40px;">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">使用 Skill</h3>
-    <div class="compare-cards">
-      <div class="compare-card">
-        <h4><span style="color:var(--accent);">/</span> 显式调用</h4>
-        <p>用 <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(124,91,245,0.1);padding:2px 6px;border-radius:3px;color:var(--accent-light);">/</code> 前缀直接触发特定 Skill</p>
-        <div class="example">/tavily-search 人工智能最新进展</div>
-      </div>
-      <div class="compare-card">
-        <h4><span style="color:var(--accent-secondary);">~</span> 隐式触发</h4>
-        <p>用自然语言描述需求，Claude 自动匹配最合适的 Skill</p>
-        <div class="example">"帮我搜一下最新的 AI 论文"</div>
-      </div>
-    </div>
-    <div class="tip info fade-in">
-      <span class="tip-icon">i</span>
-      <span>输入 <code>/</code> 可以查看当前已安装的所有 Skills 列表</span>
-    </div>
-  </div>
-
-  <!-- 推荐 -->
-  <div class="fade-in">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">推荐安装的 Skills</h3>
-    <div class="skill-table-wrap">
-      <table>
-        <thead><tr><th>Skill</th><th>用途</th><th>类型</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><code>tavily-search</code></td>
-            <td>AI 优化的网页搜索</td>
-            <td><span class="skill-tag search">搜索</span></td>
-          </tr>
-          <tr>
-            <td><code>openalex-paper-search</code></td>
-            <td>学术论文检索</td>
-            <td><span class="skill-tag paper">学术</span></td>
-          </tr>
-          <tr>
-            <td><code>pdf</code></td>
-            <td>PDF 文件读取与生成</td>
-            <td><span class="skill-tag doc">文档</span></td>
-          </tr>
-          <tr>
-            <td><code>claude-api</code></td>
-            <td>Claude API 开发辅助</td>
-            <td><span class="skill-tag dev">开发</span></td>
-          </tr>
-          <tr>
-            <td><code>simplify</code></td>
-            <td>代码审查与优化</td>
-            <td><span class="skill-tag review">审查</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="section-nav"><a href="#tips" class="section-nav-next">常用技巧 <span class="arrow">&rarr;</span></a></div>
-</section>
-
-<!-- 7. 常用技巧 -->
-<section id="tips">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 07</div>
-    <h2><span class="glitch-text" data-text="常用">常用</span> <span class="accent">技巧</span></h2>
-    <p class="section-desc">一些能让你用得更顺手的小技巧。</p>
-  </div>
-
-  <div class="fade-in" style="margin-bottom:36px;">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">快捷命令</h3>
-    <div class="cmd-grid">
-      <div class="cmd-item">
-        <span class="key">/help</span>
-        <span class="desc">查看帮助信息</span>
-      </div>
-      <div class="cmd-item">
-        <span class="key">/config</span>
-        <span class="desc">修改设置（主题、模型等）</span>
-      </div>
-      <div class="cmd-item">
-        <span class="key">/clear</span>
-        <span class="desc">清空当前对话</span>
-      </div>
-      <div class="cmd-item">
-        <span class="key">Ctrl + C</span>
-        <span class="desc">中断当前操作</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="fade-in" style="margin-bottom:36px;">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">让 Claude 记住你的偏好</h3>
-    <p style="color:var(--text-secondary);font-size:15px;margin-bottom:16px;">直接告诉它即可，偏好会保存下来，后续对话自动生效。</p>
-    <div class="interactive-prompt">
-      <span class="prompt-symbol">></span>
-      <span class="prompt-text"><strong>你：</strong>以后帮我写代码时不要加注释</span>
-    </div>
-    <div class="interactive-prompt">
-      <span class="prompt-symbol" style="color:var(--accent-secondary);">~</span>
-      <span class="prompt-text"><strong>Claude：</strong>已记住，后续代码生成将不再添加注释。</span>
-    </div>
-  </div>
-
-  <div class="fade-in">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">基本对话</h3>
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon green">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </div>
-        <h3>自然语言交互</h3>
-        <p>在终端或 VS Code 中直接用自然语言描述需求，Claude 自动理解上下文</p>
-      </div>
-      <div class="card">
-        <div class="card-icon pink">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        </div>
-        <h3>代码上下文感知</h3>
-        <p>Claude Code 会自动读取当前项目结构和代码，无需手动解释项目背景</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 8. 探索知识库 -->
-<section id="explore">
-  <div class="fade-in">
-    <div class="section-label"><span class="line"></span> SECTION 08</div>
-    <h2><span class="glitch-text" data-text="探索">探索</span> <span class="accent">知识库</span></h2>
-    <p class="section-desc">进入 Claude Code 的完整学习生态。从基础概念到高级实战，助你彻底通关 AI 辅助开发。</p>
-  </div>
-
-  <div class="card-grid-3 fade-in">
-    <div class="card neon-border scan-beam glow-card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+    <!-- Card 1: API 入门 -->
+    <a href="pages/api-intro.html" class="module-card theme-blue neon-border scan-beam fade-in">
       <div>
-        <div class="card-icon blue">
+        <div class="module-icon blue">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
         </div>
-        <h3 style="margin-bottom: 12px; font-size: 17px; font-weight: 700;">API 入门指南</h3>
-        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
-          解析程序之间对话的桥梁。零基础理解 API 基础知识、Token 计费原理与 Key 托管，为 AI 编程打下扎实的网络基石。        </p>
+        <h3>什么是 API <span class="tag blue">基础</span></h3>
+        <p class="desc">零基础理解 API 是什么、Token 如何计费、Key 如何管理。为 AI 编程打下网络基石。</p>
       </div>
-      <a href="pages/api-intro.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--accent-tertiary); text-decoration: none; border: 1px solid rgba(56, 189, 248, 0.2); background: rgba(56, 189, 248, 0.05); border-radius: 100px; transition: all 0.3s ease; text-align: center; justify-content: center; width: 100%;">
-        进入指南 <span style="font-size: 16px;">&rarr;</span>
-      </a>
-    </div>
+      <span class="cta">进入指南 <span>&rarr;</span></span>
+    </a>
 
-    <div class="card neon-border scan-beam glow-card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+    <!-- Card 2: Claude Code 核心 -->
+    <a href="pages/claude-code-intro.html" class="module-card theme-purple neon-border scan-beam fade-in">
       <div>
-        <div class="card-icon purple">
+        <div class="module-icon purple">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9l3 3-3 3"/><line x1="15" y1="15" x2="15" y2="15"/></svg>
         </div>
-        <h3 style="margin-bottom: 12px; font-size: 17px; font-weight: 700;">Claude Code 核心指南</h3>
-        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
-          用自然语言掌控代码！Andrej Karpathy 推崇的 Vibe Coding 时代核心利器，深度解析终端与编辑器集成的自动感知与敏捷开发流程。        </p>
+        <h3>什么是 CC <span class="tag purple">核心</span></h3>
+        <p class="desc">Vibe Coding 时代的核心利器。深度解析终端与编辑器集成的自动感知与敏捷开发流程。</p>
       </div>
-      <a href="pages/claude-code-intro.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--accent-light); text-decoration: none; border: 1px solid rgba(124, 91, 245, 0.2); background: rgba(124, 91, 245, 0.05); border-radius: 100px; transition: all 0.3s ease; text-align: center; justify-content: center; width: 100%;">
-        进入指南 <span style="font-size: 16px;">&rarr;</span>
-      </a>
-    </div>
+      <span class="cta">进入指南 <span>&rarr;</span></span>
+    </a>
 
-    <div class="card neon-border scan-beam glow-card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+    <!-- Card 3: 配置指南 (主推) -->
+    <a href="pages/guide.html" class="module-card theme-green neon-border scan-beam fade-in" style="border-color: rgba(52,211,153,0.2);">
       <div>
-        <div class="card-icon green">
+        <div class="module-icon green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3>快速开始 <span class="tag green">推荐</span></h3>
+        <p class="desc">从获取 API Key 到安装配置，再到 VS Code 集成和 Skills 扩展，手把手带你通关。</p>
+      </div>
+      <span class="cta">开始配置 <span>&rarr;</span></span>
+    </a>
+
+    <!-- Card 4: Vibe Coding 技巧 -->
+    <a href="pages/vibe-coding.html" class="module-card theme-amber neon-border scan-beam fade-in">
+      <div>
+        <div class="module-icon amber">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>CC 技巧 <span class="tag amber">进阶</span></h3>
+        <p class="desc">斜杠命令、@文件引用、快捷键、MCP 服务、Hooks 自动化——掌握全部高级技巧。</p>
+      </div>
+      <span class="cta">查看攻略 <span>&rarr;</span></span>
+    </a>
+
+    <!-- Card 5: 论文转 LaTeX -->
+    <a href="pages/paper-to-tex.html" class="module-card theme-pink neon-border scan-beam fade-in">
+      <div>
+        <div class="module-icon pink">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         </div>
-        <h3 style="margin-bottom: 12px; font-size: 17px; font-weight: 700;">论文转 LaTeX 实战</h3>
-        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
-          真实学术场景演练。看 Claude Code 如何在数分钟内将一个 Markdown/Word 格式论文无损转为符合 IEEE 等顶级期刊标准格式的 LaTeX 源代码。        </p>
+        <h3>论文转 LaTeX <span class="tag pink">实战</span></h3>
+        <p class="desc">真实学术场景演练。Markdown/Word 论文无损转为 IEEE 等顶级期刊标准 LaTeX 格式。</p>
       </div>
-      <a href="pages/paper-to-tex.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: #34d399; text-decoration: none; border: 1px solid rgba(52, 211, 153, 0.2); background: rgba(52, 211, 153, 0.05); border-radius: 100px; transition: all 0.3s ease; text-align: center; justify-content: center; width: 100%;">
-        开始实战 <span style="font-size: 16px;">&rarr;</span>
-      </a>
-    </div>
+      <span class="cta">开始实战 <span>&rarr;</span></span>
+    </a>
+
+    <!-- Card 6: 外部工具 -->
+    <a href="pages/tools.html" class="module-card theme-amber neon-border scan-beam fade-in">
+      <div>
+        <div class="module-icon amber">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <h3>外部工具 <span class="tag amber">生态</span></h3>
+        <p class="desc">CC-Connect 桥接消息平台，CC-Switch 可视化配置模型。扩展 Claude Code 的能力边界。</p>
+      </div>
+      <span class="cta">了解工具 <span>&rarr;</span></span>
+    </a>
+
+
   </div>
-
-  <!-- Vibe Coding 使用技巧 — 新增 -->
-  <div class="fade-in" style="margin-top: 24px;">
-    <div class="card neon-border scan-beam" style="display: flex; align-items: center; gap: 28px; padding: 32px;">
-      <div class="card-icon amber" style="flex-shrink: 0; width: 56px; height: 56px; font-size: 26px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      </div>
-      <div style="flex: 1;">
-        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">
-          Vibe Coding 工具使用技巧
-          <span style="font-size: 11px; color: var(--accent-amber); font-weight: 500; margin-left: 8px; background: rgba(251,191,36,0.12); padding: 2px 8px; border-radius: 100px;">全面攻略</span>
-        </h3>
-        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
-          从 /斜杠命令、@文件引用、键盘快捷键到 MCP 服务、Hooks 自动化——掌握 Claude Code 的全部命令与高级技巧，让你的 Vibe Coding 体验如丝般顺滑。
-        </p>
-        <a href="pages/vibe-coding.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; font-size: 13px; font-weight: 600; color: var(--accent-amber); text-decoration: none; border: 1px solid rgba(251,191,36,0.2); background: rgba(251,191,36,0.05); border-radius: 100px; transition: all 0.3s ease;">
-          查看完整攻略 <span style="font-size: 16px;">&rarr;</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-nav"><a href="#hero" class="section-nav-next">回到顶部 <span class="arrow">&uarr;</span></a></div>
-</section>
-
-<!-- Footer -->
-<div class="footer fade-in">
-  <a href="#hero" class="back-to-top">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
-    回到顶部
-  </a>
-  <p style="margin-top:32px;">深入学习：<a href="pages/api-intro.html">什么是 API</a> · <a href="pages/claude-code-intro.html">什么是 Claude Code</a> · <a href="pages/vibe-coding.html">Vibe Coding 技巧</a> · <a href="pages/paper-to-tex.html">实战：论文转 LaTeX</a></p>
-  <p style="margin-top:12px;">遇到问题？前往 <a href="https://github.com/anthropics/claude-code/issues" target="_blank">Claude Code GitHub</a> 提交反馈</p>
-  <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Made with Claude Code</p>
-  <p style="margin-top:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.5px;">Author: <span style="color:var(--accent-light);">Ranran</span> @ Tongji University</p>
 </div>
 
-</div><!-- .container -->
+<!-- Footer -->
+<div class="index-footer fade-in">
+  <p>深入学习：<a href="pages/api-intro.html">什么是 API</a> · <a href="pages/claude-code-intro.html">什么是 CC</a> · <a href="pages/guide.html">快速开始</a> · <a href="pages/vibe-coding.html">CC 技巧</a> · <a href="pages/paper-to-tex.html">论文转 LaTeX</a> · <a href="pages/tools.html">外部工具</a></p>
+  <p>遇到问题？前往 <a href="https://github.com/anthropics/claude-code/issues" target="_blank">Claude Code GitHub</a> 提交反馈</p>
+  <p style="margin-top:8px;font-size:11px;color:var(--text-disabled);">Made with Claude Code</p>
+  <p style="margin-top:8px;font-size:11px;color:var(--text-disabled);letter-spacing:0.5px;">Author: <span style="color:var(--color-purple-400);">Ranran</span> @ Tongji University</p>
+</div>
 
 <script src="js/common.js"></script>
 <script>
 
-// ===== 数字滚动计数器 =====
+// ===== 终端逐行显现 =====
 (function() {
-  const stats = [
-    { id: 'stat-free', target: 0, suffix: '元', label: '最低入门成本' },
-    { id: 'stat-models', target: 5, suffix: '+', label: '可用模型' },
-    { id: 'stat-skills', target: 27000, suffix: '+', label: '可用 Skills' },
-  ];
-  const hero = document.getElementById('hero');
-  const statsRow = document.createElement('div');
-  statsRow.className = 'hero-stats';
-  statsRow.innerHTML = stats.map(s =>
-    `<div class="stat-item"><span class="stat-num" data-target="${s.target}">0</span><span class="stat-suffix">${s.suffix}</span><span class="stat-label">${s.label}</span></div>`
-  ).join('');
-  hero.appendChild(statsRow);
-  const style = document.createElement('style');
-  style.textContent = `.hero-stats{display:flex;gap:48px;margin-top:48px;opacity:0;animation:fadeInUp 0.8s ease forwards 1.2s;}.stat-item{text-align:center;}.stat-num{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:800;color:var(--accent-light);}.stat-suffix{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--accent);}.stat-label{display:block;font-size:12px;color:var(--text-muted);margin-top:4px;letter-spacing:0.5px;}`;
-  document.head.appendChild(style);
-  let counted = false;
-  const statObserver = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !counted) {
-      counted = true;
-      document.querySelectorAll('.stat-num').forEach(el => {
-        const target = parseInt(el.dataset.target);
-        const duration = 2000; const start = performance.now();
-        function update(now) {
-          const progress = Math.min((now - start) / duration, 1);
-          el.textContent = Math.round(target * (1 - Math.pow(1 - progress, 3)));
-          if (progress < 1) requestAnimationFrame(update);
-        }
-        requestAnimationFrame(update);
-      });
-    }
-  }, { threshold: 0.5 });
-  statObserver.observe(hero);
+  const lines = document.querySelectorAll('.terminal-line');
+  lines.forEach(line => {
+    const delay = parseInt(line.dataset.delay) || 0;
+    setTimeout(() => line.classList.add('reveal'), delay);
+  });
 })();
-// ===== 截图悬浮放大 =====
-document.querySelectorAll('.screenshot-wrap').forEach(wrap => {
-  wrap.addEventListener('mousemove', e => {
-    const rect = wrap.getBoundingClientRect();
-    wrap.style.setProperty('--mx', `${(e.clientX-rect.left)/rect.width*100}%`);
-    wrap.style.setProperty('--my', `${(e.clientY-rect.top)/rect.height*100}%`);
-    wrap.querySelector('img').style.transform = 'scale(1.03)';
-  });
-  wrap.addEventListener('mouseleave', () => { wrap.querySelector('img').style.transform = ''; });
-});
-// ===== 标签页切换 =====
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-}
-// ===== 打字机效果 — Hero 标题 =====
-initTypewriter('经');
 
-// ===== 复制命令 =====
-function copyCommand(btn, text) {
-  navigator.clipboard.writeText(text).then(() => {
-    btn.classList.add('copied');
-    btn.querySelector('span').textContent = '已复制';
-    setTimeout(() => {
-      btn.classList.remove('copied');
-      btn.querySelector('span').textContent = '复制';
-    }, 2000);
+// ===== 卡片 3D 倾斜 (index 专用) =====
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.module-card').forEach(card => {
+    const handleMove = (cx, cy) => {
+      const r = card.getBoundingClientRect();
+      const x = (cx - r.left) / r.width - 0.5;
+      const y = (cy - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(800px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translateY(-6px)`;
+      card.style.setProperty('--mx', `${(x+0.5)*100}%`);
+      card.style.setProperty('--my', `${(y+0.5)*100}%`);
+    };
+    const handleLeave = () => {
+      card.style.transform = '';
+    };
+    card.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
+    card.addEventListener('touchmove', e => {
+      if (e.touches.length === 1) handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    card.addEventListener('touchend', handleLeave);
+    card.addEventListener('mouseleave', handleLeave);
   });
-}
+})();
 
 </script>
 </body>
 </html>
-
